@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { validateCheckout } from '../src/data/shopping.mjs';
 import { digest } from './auth.mjs';
 import { getSettings, transaction, activity, mapOrder } from './database.mjs';
-import { fail, integer, object, text } from './validation.mjs';
+import { fail, integer, object, text, email, phone } from './validation.mjs';
 
 export function quote(db, input) {
   object(input);
@@ -29,6 +29,10 @@ export function quote(db, input) {
 }
 export function placeOrder(db, input, key) {
   object(input); object(input.details);
+  if (!Array.isArray(input.items)) fail('Add ingredients to your bag.');
+  text(input.details.name, 'full name', 2, 100); email(input.details.email); phone(input.details.phone);
+  if (input.details.notes !== undefined) text(input.details.notes, 'note', 0, 500);
+  if (input.method === 'courier') for (const key of ['address', 'city', 'province', 'postalCode']) text(input.details[key], key, 1, key === 'address' ? 200 : 100);
   text(key, 'request key', 16, 128);
   const errors = validateCheckout(input.details, input.method);
   if (Object.keys(errors).length) fail(Object.values(errors)[0]);

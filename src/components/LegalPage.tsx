@@ -25,7 +25,7 @@ export default function LegalPage({ title, introduction, related, sections }: Le
         <Link className="text-link" to={related.path}>{related.title}</Link>
       </nav>
       <article className="legal-article" aria-label={title}>
-        <aside className="legal-notice" aria-label="Website preview notice"><p>This website is currently a preview. Contact forms prepare a message for you to copy; they do not send it. Checkout does not collect payments or submit an order. Business contact details shown in this preview are placeholders.</p></aside>
+        <aside className="legal-notice" aria-label="Website service notice"><p>Contact submissions and order requests are saved securely for the Herby Health team. Checkout does not collect payment. A request is subject to confirmation of availability, payment and delivery arrangements.</p></aside>
         {sections.map((section, index) => <section id={section.id} key={section.id} aria-labelledby={`${section.id}-heading`}>
           <h2 id={`${section.id}-heading`}>{index + 1}. {section.title}</h2>
           {section.content}

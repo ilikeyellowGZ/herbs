@@ -55,6 +55,36 @@ try {
   await reducedContext.close();
   console.log('PASS reduced-motion direct route and accessibility');
 
+  for (const scenario of ['live reduced motion', 'stalled image safety limit']) {
+    const page = await browser.newPage();
+    page.on('pageerror', error => errors.push(error.message));
+    let releaseImage;
+    const imageGate = new Promise(resolve => { releaseImage = resolve; });
+    await page.route('**/images/herby-health/heroes/garden-aerial-*', async route => {
+      await imageGate;
+      await route.continue();
+    });
+    await page.goto(base, { waitUntil: 'domcontentloaded' });
+    const loader = page.locator('.site-loader');
+    await loader.waitFor({ state: 'visible' });
+    await page.waitForFunction(() => document.getElementById('site-content')?.inert === true);
+    if (scenario === 'live reduced motion') {
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      assert.equal(await loader.locator('svg').evaluate(el => getComputedStyle(el).animationName), 'none');
+      assert.equal(await loader.locator('.loading-screen__dot').first().evaluate(el => getComputedStyle(el).animationName), 'loader-dot-reduced');
+      assert.equal(await loader.isVisible(), true, 'Reduced motion still waits for the actual page assets');
+      releaseImage();
+      await loader.waitFor({ state: 'detached', timeout: 1500 });
+    } else {
+      await loader.waitFor({ state: 'detached', timeout: 6500 });
+      assert.equal(await page.locator('#site-content').evaluate(el => el.inert), false);
+      releaseImage();
+    }
+    await page.waitForLoadState('load');
+    await page.close();
+    console.log(`PASS ${scenario}`);
+  }
+
   const noJs = await browser.newPage({ javaScriptEnabled: false });
   await noJs.goto(base);
   await noJs.getByRole('heading', { level: 1 }).waitFor();

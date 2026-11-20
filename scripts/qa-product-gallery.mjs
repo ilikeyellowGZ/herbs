@@ -7,7 +7,7 @@ import { products } from '../src/data/catalogue.mjs';
 const base = process.env.QA_URL || 'http://localhost:4173';
 const browser = await chromium.launch({ channel: 'msedge', headless: true });
 const errors = [];
-const widths = (process.env.QA_WIDTHS || '375,768,1280').split(',').map(Number);
+const widths = process.env.QA_WIDTHS === 'none' ? [] : (process.env.QA_WIDTHS || '375,768,1280').split(',').map(Number);
 await mkdir('artifacts/product-gallery', { recursive: true });
 try {
   for (const width of widths) {
@@ -56,6 +56,8 @@ try {
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
   for (const [route, selector] of [['/', '.product-card'], ['/collection', '.catalogue-card__photo'], ['/products/moringa', '.product-card']]) {
     await page.goto(base + route);
+    // NavigationEffects finishes its existing route scroll/focus after 380ms.
+    await page.waitForTimeout(450);
     const cards = page.locator(selector);
     await cards.first().waitFor();
     for (const card of await cards.all()) {

@@ -1,4 +1,4 @@
-import { findProduct } from './catalogue.mjs';
+import { findProduct, products } from './catalogue.mjs';
 
 export const CART_KEY = 'herby-health-cart-v1';
 export const MAX_QUANTITY = 99;
@@ -30,15 +30,15 @@ export function changeQuantity(cart, slug, quantity) {
   return clean;
 }
 
-export function cartSummary(cart, method = 'courier') {
+export function cartSummary(cart, method = 'courier', catalogue = products, rates = { courierFee: COURIER_FEE, freeDelivery: FREE_DELIVERY }) {
   const items = normaliseCart(cart).flatMap(item => {
-    const product = findProduct(item.slug);
+    const product = catalogue.find(product => product.slug === item.slug);
     if (!product) return [];
     return [{ ...item, product, lineTotal: Math.round(product.price * 100) * item.quantity }];
   });
   const subtotal = items.reduce((sum, item) => sum + item.lineTotal, 0);
   const count = items.reduce((sum, item) => sum + item.quantity, 0);
-  const shipping = count && method !== 'collection' && subtotal < FREE_DELIVERY ? COURIER_FEE : 0;
+  const shipping = count && method !== 'collection' && subtotal < rates.freeDelivery ? rates.courierFee : 0;
   return { items, count, subtotal, shipping, total: subtotal + shipping };
 }
 
@@ -60,8 +60,8 @@ export function validateCheckout(details, method) {
   return errors;
 }
 
-export function orderRequest(cart, details, method) {
-  const summary = cartSummary(cart, method);
+export function orderRequest(cart, details, method, catalogue = products, rates = { courierFee: COURIER_FEE, freeDelivery: FREE_DELIVERY }) {
+  const summary = cartSummary(cart, method, catalogue, rates);
   return [
     'Herby Health — order request',
     'Preview: No order or payment has been submitted. Please confirm stock, final product labels, delivery and payment arrangements.',

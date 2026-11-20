@@ -71,6 +71,12 @@ try {
     await accessibility(page, `review ${width}`);
     await page.evaluate(() => { document.activeElement?.blur(); window.scrollTo(0, 0); });
     await page.screenshot({ path: `artifacts/shopping/review-${width}.png`, fullPage: true });
+    if (width === 1280) {
+      await page.evaluate(() => Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: async () => { throw new Error('Clipboard unavailable'); } } }));
+      await page.getByRole('button', { name: 'Copy order request', exact: true }).click();
+      await page.getByLabel('Your order request', { exact: true }).waitFor();
+      assert.match(await page.getByLabel('Your order request', { exact: true }).inputValue(), /No order or payment has been submitted/);
+    }
     await page.getByRole('button', { name: 'Edit contact & delivery details', exact: true }).click();
     await page.getByRole('radio', { name: /Collect in Gauteng/ }).check();
     assert.match(await page.locator('.checkout-summary .shopping-total dd').textContent(), /285[.,]00/);
@@ -113,6 +119,19 @@ try {
   await page.getByRole('button', { name: 'Open shopping bag, 99 items', exact: true }).click();
   assert.match(await page.locator('.cart-drawer .shopping-total dd').textContent(), /9[\s,]?405[.,]00/);
   await edge.close();
+  const limited = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  await limited.addInitScript(() => {
+    const original = Storage.prototype.setItem;
+    Storage.prototype.setItem = function(key, value) { if (key === 'herby-health-cart-v1') throw new Error('Storage unavailable'); return original.call(this, key, value); };
+  });
+  const home = await limited.newPage();
+  home.on('pageerror', error => errors.push(error.message));
+  await home.goto(base, { waitUntil: 'networkidle' });
+  await home.getByRole('button', { name: 'Add Bay Leaves to bag', exact: true }).click();
+  await home.getByRole('button', { name: 'Open shopping bag, 1 item', exact: true }).click();
+  await home.getByText('Your bag works for this visit, but this browser could not save it for later.', { exact: true }).waitFor();
+  await overflow(home);
+  await limited.close();
   assert.deepEqual(errors, []);
-  console.log('Malformed cart, untrusted prices, unknown products, quantity limit and console checks passed.');
+  console.log('Malformed cart, untrusted prices, unknown products, quantity limit, home add, storage/clipboard fallback and console checks passed.');
 } finally { await browser.close(); }

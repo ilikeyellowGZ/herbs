@@ -64,6 +64,8 @@ The enquiry form is in preview mode until a real contact endpoint is configured.
 
 Collection, Rituals, Our Story, Contact and FAQs have dedicated pages at `/collection`, `/rituals`, `/our-story`, `/contact` and `/faqs`. Production builds prerender these pages for direct access.
 
+The help centre at `/get-help` has nine topic groups, 23 searchable articles, grid/list layouts and links to contact support and FAQs. Topic and article URLs support reload and browser history. Edit content in `src/data/help.mjs`; article counts update automatically. Run `node scripts/qa-help.mjs` against the production preview (or set `QA_URL`) to verify responsive layouts, search, article links, history, keyboard focus and accessibility. Regenerate its responsive garden banners with `python scripts/prepare-help-images.py`.
+
 To connect every **Say hello** action to the company Instagram, copy `.env.example` to `.env.local` and set `VITE_INSTAGRAM_URL` to the confirmed full profile URL. Restart the development server or rebuild production after changing it. Until configured, these links open Contact. The profile handle has not yet been supplied.
 
 Run `node scripts/qa-pages.mjs` for page navigation, responsive layout, enquiry and footer cursor checks. Set `QA_URL=http://localhost:4173` to check the production preview.

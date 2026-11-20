@@ -1,7 +1,7 @@
 import { useState, useSyncExternalStore } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Search, X, ChevronDown, Leaf, CupSoda, BookOpen, SlidersHorizontal } from 'lucide-react';
-import { products } from '../data/catalogue.mjs';
+import { useStore } from './StoreContext';
 import { collectionCategories, sortOptions, queryProducts, hasPrice } from '../data/catalogue-query.mjs';
 import type { Product } from './ProductCard';
 import ProductImageSwap from './ProductImageSwap';
@@ -25,6 +25,8 @@ function CollectionCard({ product, onOpen, priority }: { product: Product; onOpe
 }
 
 export default function CatalogueBrowser() {
+  const { products: catalogue } = useStore();
+  const products = catalogue.filter(p => p.active !== false);
   const [quick, setQuick] = useState<Product | null>(null);
   const [params, setParams] = useSearchParams();
   // Static HTML is generated without a query string. Match it during hydration,
@@ -64,9 +66,9 @@ export default function CatalogueBrowser() {
     <section id="collection-help" className="collection-help section-gutters" aria-labelledby="collection-help-title"><div><p className="eyebrow">A little guidance</p><h2 id="collection-help-title">Choose with curiosity.<br /><em>Begin with care.</em></h2><p>A good ritual starts with knowing what you’re choosing. Open any ingredient guide for benefits, preparation, storage and things to keep in mind.</p><Link className="text-link" to="/contact">Talk to us about your questions</Link></div><Accordion items={[
       { title: 'Where should I begin?', content: 'Start with how you would like to use an ingredient: a tea, something for your pantry, or a supplement to discuss with a practitioner. Filter by category, then open the guide for flavour, preparation, potential benefits and suitability.' },
       { title: 'How much should I take?', content: 'Food preparation and supplement dosage are different. Follow the actual product label for amounts and frequency. We confirm the format and directions on enquiry; do not assume a universal scoop, capsule count or daily dose.' },
-      { title: 'What are the prices and pack sizes?', content: 'Prices are in South African rand. Each card shows its pack size and product form. Add your ingredients to the bag, adjust quantities and continue to checkout. The listed prices and formats are proposed for this preview; stock and final labels need confirmation before live sales.' },
+      { title: 'What are the prices and pack sizes?', content: 'Prices are in South African rand. Each card shows its pack size and product form. Add your ingredients to the bag, adjust quantities and continue to checkout. Current pricing is checked when you submit. Confirm final labels and arrangements with us before paying.' },
       { title: 'What about allergies and medication?', content: 'Request the complete ingredient list, allergen and cross-contact information for the actual product. Supplements can interact with medicines. Speak with a pharmacist or clinician if you take medication, have a condition, are pregnant or breastfeeding, or are choosing for a child.' },
-      { title: 'How do delivery and enquiries work?', content: 'South African courier delivery is R75, or free for a product subtotal of R650 or more. Gauteng collection is free by arrangement. Checkout lets you review and copy an order request. Payments and automatic order submission are not connected in this preview.' },
+      { title: 'How do delivery and enquiries work?', content: 'Checkout shows current courier and collection options and the full total. Submit an order request to receive a reference. We confirm availability, payment and delivery arrangements directly. The contact form sends messages and optional attachments to our private inbox.' },
     ]} /></section>
     <QuickView product={quick} onClose={() => setQuick(null)} />
   </>;

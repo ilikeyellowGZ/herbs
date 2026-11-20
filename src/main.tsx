@@ -13,5 +13,5 @@ if (import.meta.env.DEV && import.meta.env.VITE_REACT_TOOLS !== 'false') {
 
 const root = document.getElementById('root')!;
 const application = <React.StrictMode><BrowserRouter><App /></BrowserRouter></React.StrictMode>;
-if (root.hasChildNodes()) ReactDOM.hydrateRoot(root, application);
+if (root.hasChildNodes() && !location.pathname.startsWith('/admin')) ReactDOM.hydrateRoot(root, application);
 else ReactDOM.createRoot(root).render(application);

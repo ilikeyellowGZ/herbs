@@ -302,5 +302,21 @@
     "width": 1122,
     "height": 1402,
     "alt": "A quiet moment with a ceramic cup by a window and the Herby Health Ashwagandha jar."
+  },
+  "help-garden": {
+    "src": "/images/herby-health/heroes/help-garden-1600.webp",
+    "srcSet": "/images/herby-health/heroes/help-garden-768.webp 768w, /images/herby-health/heroes/help-garden-1024.webp 1024w, /images/herby-health/heroes/help-garden-1280.webp 1280w, /images/herby-health/heroes/help-garden-1600.webp 1600w",
+    "fallback": "/images/herby-health/heroes/help-garden-1600.webp",
+    "width": 1600,
+    "height": 312,
+    "alt": "An aerial view of the Herby Health garden."
+  },
+  "help-garden-mobile": {
+    "src": "/images/herby-health/heroes/help-garden-mobile-960.webp",
+    "srcSet": "/images/herby-health/heroes/help-garden-mobile-360.webp 360w, /images/herby-health/heroes/help-garden-mobile-480.webp 480w, /images/herby-health/heroes/help-garden-mobile-640.webp 640w, /images/herby-health/heroes/help-garden-mobile-960.webp 960w",
+    "fallback": "/images/herby-health/heroes/help-garden-mobile-960.webp",
+    "width": 960,
+    "height": 693,
+    "alt": "An aerial view of the Herby Health garden."
   }
 }

@@ -23,6 +23,7 @@
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 124px; }
 body { margin: 0; color: var(--olive); background: var(--garden); font: 400 16px/1.6 var(--sans); -webkit-font-smoothing: antialiased; }
+.contact-address { white-space: pre-line; }
 body:has(dialog[open]) { overflow: hidden; }
 button, input, select, textarea { font: inherit; }
 button, a, input, textarea, select { -webkit-tap-highlight-color: transparent; }

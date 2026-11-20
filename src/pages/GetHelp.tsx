@@ -18,7 +18,7 @@ export default function GetHelp() {
   const results = searching ? searchHelp(query) : [];
   const heading = useRef<HTMLHeadingElement>(null);
   const search = useRef<HTMLInputElement>(null);
-  const selection = searching ? '' : `${topic?.id || ''}/${article?.id || ''}`;
+  const selection = `${topic?.id || ''}/${article?.id || ''}`;
   const previousSelection = useRef(selection);
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export default function GetHelp() {
 
   return <div className="destination-page help-page">
     <section className="help-hero" aria-labelledby="help-title">
-      <ResponsiveImage name="garden-aerial" className="help-hero__image" sizes="100vw" priority alt="" />
+      <ResponsiveImage name="help-garden" mobileName="help-garden-mobile" className="help-hero__image" sizes="100vw" priority alt="" />
       <div className="help-hero__content">
         <h1 id="help-title">Need help? We’ve got you covered</h1>
         <form className="help-search" role="search" onSubmit={event => { event.preventDefault(); heading.current?.focus(); }}>

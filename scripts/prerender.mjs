@@ -6,6 +6,7 @@ import { pages } from '../src/data/pages.mjs';
 
 const { render } = await import(pathToFileURL(resolve('dist-server/entry-server.js')).href);
 const template = await readFile('dist/index.html', 'utf8');
+await writeFile('dist/app-shell.html', template.replace(/\s*<link rel="preload" as="image"[^>]*>/, '').replace('</head>', '<meta name="robots" content="noindex,nofollow" /></head>'));
 const escape = text => text.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;');
 for (const route of ['/', ...pages.map(page => page.path), ...products.map(product => `/products/${product.slug}`)]) {
   const content = await render(route);

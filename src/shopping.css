@@ -46,7 +46,7 @@
 .cart-empty p { max-width: 360px; }
 .cart-storage-note { font-size: var(--text-sm); background: var(--garden); padding: 16px 24px; }
 .shopping-preview { font-size: var(--text-xs); line-height: 1.6; }
-.checkout-page { max-width: 1440px; margin-inline: auto; padding-block: 40px 100px; }
+.checkout-page { max-width: 1440px; margin-inline: auto; padding-block: calc(100px + 40px) 100px; }
 .checkout-back { display: inline-flex; align-items: center; gap: 8px; }
 .checkout-heading { padding-block: 40px; }
 .checkout-heading h1 { font-size: 64px; line-height: 1.02; letter-spacing: -.025em; margin-block: 20px 24px; }
@@ -103,7 +103,7 @@
 @media (max-width: 640px) {
   .cart-trigger { margin-right: 12px; }
   .cart-count { right: -4px; top: 0; }
-  .checkout-page { padding-block: 24px 48px; }
+  .checkout-page { padding-block: calc(84px + 24px) 48px; }
   .checkout-heading { padding-block: 32px; }
   .checkout-heading h1 { font-size: 48px; }
   .checkout-steps { gap: 20px; }
