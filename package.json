@@ -33,6 +33,7 @@
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "@vitejs/plugin-react": "^5.1.1",
+    "concurrently": "^10.0.7",
     "lighthouse": "^13.6.0",
     "playwright": "^1.65.1",
     "react-doctor": "latest",

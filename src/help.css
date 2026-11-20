@@ -18,7 +18,7 @@
 .help-directory__toolbar { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 40px; min-height: 44px; }
 .help-directory h2, .help-support h2 { margin: 0; font: 400 24px/1.35 var(--sans); letter-spacing: -.025em; }
 .help-view-toggle { display: flex; flex-shrink: 0; padding: 3px; border-radius: 28px; background: var(--garden); }
-.help-view-toggle button { display: grid; place-items: center; width: 44px; height: 38px; border-radius: 50%; transition: background-color .16s, color .16s; }
+.help-view-toggle button { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; transition: background-color .16s, color .16s; }
 .help-view-toggle button[aria-pressed='true'] { background: var(--olive); color: var(--porcelain); }
 .help-view-toggle button:focus-visible { outline-offset: 2px; }
 .help-topics, .help-articles { list-style: none; padding: 0; margin: 0; }

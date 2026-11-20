@@ -130,13 +130,9 @@ button.product-card { display: flex; flex-direction: column; align-items: stretc
 @media (hover: hover) and (pointer: fine) {
   .product-card:hover .product-image-swap__alternate,
   .catalogue-card__photo:hover .product-image-swap__alternate { opacity: 1; }
-  .product-card:hover .product-image-swap > picture:first-child,
-  .catalogue-card__photo:hover .product-image-swap > picture:first-child { opacity: 0; }
 }
 .product-card:focus-visible .product-image-swap__alternate,
 .catalogue-card__photo:focus-visible .product-image-swap__alternate { opacity: 1; }
-.product-card:focus-visible .product-image-swap > picture:first-child,
-.catalogue-card__photo:focus-visible .product-image-swap > picture:first-child { opacity: 0; }
 .product-card:hover .product-card__image img, .product-card:focus-visible .product-card__image img { transform: scale(1.025); }
 .product-card__explore { position: absolute; inset: auto 12px 12px; padding: 12px 16px; font-size: var(--text-xs); background: var(--porcelain); display: flex; justify-content: space-between; align-items: center; opacity: 0; transform: translateY(8px); transition: opacity .2s, transform .2s; }
 .product-card:hover .product-card__explore, .product-card:focus-visible .product-card__explore { opacity: 1; transform: translateY(0); }

@@ -64,7 +64,7 @@ export const helpTopics = [
     id: 'support', title: 'Contact & support', icon: 'message',
     articles: [
       { id: 'contact', title: 'How can I get in touch?', body: 'Choose Say hello to open our contact page. Add your name, email, phone number and a message, then prepare a copyable enquiry. The form is a preview and does not send your message automatically.', href: '/contact', link: 'Say hello' },
-      { id: 'attachments', title: 'Can I include a photograph in my enquiry?', body: 'The contact form lets you select attachments for your enquiry draft. Files stay in this browser session; they are not uploaded or included when you copy the message text. Share the original files separately when a contact channel has been confirmed.', href: '/contact', link: 'Prepare an enquiry' },
+      { id: 'attachments', title: 'Can I include a photograph in my enquiry?', body: 'The contact form lets you select attachments for your enquiry draft. Files stay in this browser session. Their names are listed in the prepared message, but the files themselves are not uploaded or copied with the text. Share the original files separately when a contact channel has been confirmed.', href: '/contact', link: 'Prepare an enquiry' },
       { id: 'draft', title: 'Will my enquiry draft be saved?', body: 'Your contact draft stays available while you navigate within the current browser session. Returning to Say hello lets you continue editing. A page reload or closing the site can clear the draft, so copy any message you want to keep.', href: '/contact', link: 'Return to your enquiry' },
     ],
   },

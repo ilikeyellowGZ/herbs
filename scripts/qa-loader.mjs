@@ -44,14 +44,15 @@ try {
     console.log(`PASS initial loading, readiness, keyboard, navigation and layout at ${width}px`);
   }
 
-  const reduced = await browser.newPage({ reducedMotion: 'reduce' });
+  const reducedContext = await browser.newContext({ reducedMotion: 'reduce' });
+  const reduced = await reducedContext.newPage();
   reduced.on('pageerror', error => errors.push(error.message));
   await reduced.goto(`${base}/faqs`, { waitUntil: 'domcontentloaded' });
   await reduced.locator('.site-loader').waitFor({ state: 'detached', timeout: 2500 });
   await reduced.getByRole('heading', { level: 1 }).waitFor();
   const accessibility = await new AxeBuilder({ page: reduced }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
   assert.deepEqual(accessibility.violations.map(v => ({ id: v.id, targets: v.nodes.map(n => n.target) })), []);
-  await reduced.close();
+  await reducedContext.close();
   console.log('PASS reduced-motion direct route and accessibility');
 
   const noJs = await browser.newPage({ javaScriptEnabled: false });

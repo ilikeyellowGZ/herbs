@@ -77,8 +77,8 @@ export default function GetHelp() {
       <section className="help-support" aria-labelledby="help-support-title">
         <h2 id="help-support-title">Get support</h2>
         <div className="help-support__grid">
-          <Link className="help-support__card" to="/contact"><MessageCircle size={24} strokeWidth={1.4} aria-hidden="true" /><span><h3>A little help from us</h3><p>Have a question of your own? Let’s talk.</p><span className="help-support__action">Say hello <ArrowRight size={17} aria-hidden="true" /></span></span></Link>
-          <Link className="help-support__card" to="/faqs"><BookOpen size={24} strokeWidth={1.4} aria-hidden="true" /><span><h3>A few quick answers</h3><p>A good place to begin with Herby Health.</p><span className="help-support__action">Read the FAQs <ArrowRight size={17} aria-hidden="true" /></span></span></Link>
+          <Link className="help-support__card" to="/contact"><MessageCircle size={24} strokeWidth={1.4} aria-hidden="true" /><div><h3>A little help from us</h3><p>Have a question of your own? Let’s talk.</p><span className="help-support__action">Say hello <ArrowRight size={17} aria-hidden="true" /></span></div></Link>
+          <Link className="help-support__card" to="/faqs"><BookOpen size={24} strokeWidth={1.4} aria-hidden="true" /><div><h3>A few quick answers</h3><p>A good place to begin with Herby Health.</p><span className="help-support__action">Read the FAQs <ArrowRight size={17} aria-hidden="true" /></span></div></Link>
         </div>
       </section>
     </div>
