@@ -1,16 +1,18 @@
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { findProduct } from '../data/catalogue.mjs';
 
-export type Draft = { name: string; email: string; ingredient: string; message: string };
+export type Draft = { name: string; surname: string; email: string; phone: string; message: string };
 type EnquiryState = { draft: Draft; setDraft: React.Dispatch<React.SetStateAction<Draft>>; enquire: (slug: string) => void; focusRequest: number };
 const EnquiryContext = createContext<EnquiryState | null>(null);
 
 export function EnquiryProvider({ children }: { children: ReactNode }) {
-  const [draft, setDraft] = useState<Draft>({ name: '', email: '', ingredient: '', message: '' });
+  const [draft, setDraft] = useState<Draft>({ name: '', surname: '', email: '', phone: '', message: '' });
   const [focusRequest, setFocusRequest] = useState(0);
   const navigate = useNavigate();
   const enquire = useCallback((slug: string) => {
-    setDraft(previous => ({ ...previous, ingredient: slug }));
+    const product = findProduct(slug);
+    setDraft(previous => ({ ...previous, message: previous.message.trim() || (product ? `I'd like to know more about ${product.name}.` : '') }));
     setFocusRequest(count => count + 1);
     navigate('/contact');
   }, [navigate]);

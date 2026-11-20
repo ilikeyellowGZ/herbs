@@ -42,7 +42,8 @@ try {
     await page.getByRole('button', { name: 'Enquire about Hibiscus', exact: true }).click();
     await page.waitForURL('**/contact');
     await page.locator('input[name="name"]').waitFor();
-    assert.equal(await page.locator('select[name="ingredient"]').inputValue(), 'hibiscus');
+    assert.equal(await page.locator('select[name="ingredient"]').count(), 0);
+    assert.equal(await page.locator('textarea[name="message"]').inputValue(), "I'd like to know more about Hibiscus.");
     await page.locator('input[name="name"]').fill('Ada');
     if (width === 1280) await page.getByRole('navigation', { name: 'Main navigation', exact: true }).getByRole('link', { name: 'Rituals' }).click();
     else {

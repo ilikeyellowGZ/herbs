@@ -9,13 +9,15 @@ test('all eight ingredients resolve to their own page, preserving the supplied o
   assert.equal(findProduct('collagen').category, 'Wellness supplement');
 });
 
-test('enquiry requires a real message and email and preserves the selected ingredient', () => {
-  assert.equal(prepareEnquiry({ name: 'Ada', email: 'bad', message: 'Hello' }).ok, false);
-  assert.equal(prepareEnquiry({ name: ' ', email: 'ada@example.com', message: 'Hello' }).ok, false);
-  assert.equal(prepareEnquiry({ name: 'Ada', email: 'ada@example.com', message: ' ' }).ok, false);
-  const result = prepareEnquiry({ name: ' Ada ', email: 'ada@example.com', ingredient: 'hibiscus', message: 'Please confirm the available format.' });
+test('contact message requires first name, surname, phone, email and message', () => {
+  const draft = { name: 'Ada', surname: 'Nkosi', phone: '+27 82 123 4567', email: 'ada@example.com', message: 'I would like to discuss a collaboration.' };
+  for (const field of ['name', 'surname', 'phone', 'email', 'message']) {
+    assert.equal(prepareEnquiry({ ...draft, [field]: ' ' }).ok, false, `${field} is required`);
+  }
+  assert.equal(prepareEnquiry({ ...draft, email: 'bad' }).ok, false);
+  const result = prepareEnquiry({ ...draft, name: ' Ada ', surname: ' Nkosi ', phone: ' +27 82 123 4567 ', ingredient: 'hibiscus' });
   assert.equal(result.ok, true);
-  assert.match(result.text, /Hibiscus/);
-  assert.match(result.text, /Please confirm the available format/);
-  assert.match(result.text, /Ada/);
+  assert.match(result.text, /I would like to discuss a collaboration\./);
+  assert.match(result.text, /First name: Ada\nSurname: Nkosi\nEmail: ada@example.com\nPhone: \+27 82 123 4567$/);
+  assert.doesNotMatch(result.text, /Ingredient:|Hibiscus|General enquiry/);
 });

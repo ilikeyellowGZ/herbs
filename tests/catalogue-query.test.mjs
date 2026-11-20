@@ -37,8 +37,11 @@ test('both price directions keep missing prices last and accept zero', () => {
 
 test('all eight products provide practical guides and honest commercial data', () => {
   for (const product of products) {
-    assert.equal(product.price, null);
-    assert.equal(product.packSize, null);
+    assert.ok(hasPrice(product), product.slug);
+    assert.equal(product.currency, 'ZAR');
+    assert.match(product.packSize, /\d+ (g|ml|capsules)/);
+    assert.ok(product.form.length > 3);
+    assert.ok(product.serving.length > 20);
     assert.ok(['tea', 'pantry', 'supplements'].includes(product.collection));
     assert.ok(product.guide.benefits.length >= 2, product.slug);
     for (const field of ['preparation', 'suitability', 'storage', 'summary', 'evidence']) assert.ok(product.guide[field]?.length > 20, `${product.slug}: ${field}`);

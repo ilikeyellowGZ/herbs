@@ -27,8 +27,6 @@ export function FollowerPointerCard({
     const element = region.current;
     if (!element) return;
     const enabled = window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)');
-    const size = parseFloat(getComputedStyle(element).getPropertyValue('--footer-cursor-size')) || 64;
-    const radius = size / 2;
     let active = false;
     let movement: { stop(): void }[] = [];
 
@@ -47,9 +45,9 @@ export function FollowerPointerCard({
         return;
       }
       stopMovement();
-      // Keep the logo beside the native pointer and inside the viewport.
-      const nextX = Math.max(radius, Math.min(event.clientX + radius + 16, innerWidth - radius));
-      const nextY = Math.max(radius, Math.min(event.clientY + radius + 16, innerHeight - radius));
+      // The badge's CSS translation centers it directly on the native pointer.
+      const nextX = event.clientX;
+      const nextY = event.clientY;
       if (!active) {
         x.set(nextX);
         y.set(nextY);

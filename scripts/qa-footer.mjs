@@ -42,8 +42,12 @@ try {
   await page.mouse.move(700, y);
   await page.waitForTimeout(60);
   const trailing = await page.locator('.footer-cursor').boundingBox();
-  assert.ok(trailing.x > 216 && trailing.x < 716, `Logo follows smoothly: ${trailing.x}`);
-  await page.waitForFunction(() => Math.abs(document.querySelector('.footer-cursor').getBoundingClientRect().x - 716) < 2);
+  assert.ok(trailing.x > 168 && trailing.x < 668, `Logo follows smoothly: ${trailing.x}`);
+  await page.waitForFunction(({ x, y }) => {
+    const badge = document.querySelector('.footer-cursor').getBoundingClientRect();
+    return Math.abs(badge.x + badge.width / 2 - x) < 1
+      && Math.abs(badge.y + badge.height / 2 - y) < 1;
+  }, { x: 700, y });
   await page.screenshot({ path: 'artifacts/footer/desktop-following-logo.png' });
 
   await page.keyboard.press('Tab');

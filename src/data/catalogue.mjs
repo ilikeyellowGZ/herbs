@@ -11,11 +11,34 @@ const ingredients = [
   { slug: 'ashwagandha', name: 'Ashwagandha', latin: 'Withania somnifera', category: 'Root botanical', note: 'Rooted in a slower rhythm.', description: 'An earthy root with a long botanical history. Discover the ingredient, ask your questions, and find out more about our available offering.', ritual: 'Enquire for the confirmed format and product directions. Speak to a qualified practitioner about individual suitability before use.', character: 'Earthy · Rooted · Traditional', bottle: 'Ashwagandha', moment: 'A moment to pause', detail: 'The root of Withania somnifera. Ask us for the complete product information and directions for the available format.' },
 ];
 
+// Proposed retail offers. Confirm supplier labels and stock before live sales.
+const offers = {
+  hibiscus: { price: 95, packSize: '100 g', form: 'Dried hibiscus petals', serving: 'Steep to taste and follow the pack preparation instructions.' },
+  collagen: { price: 295, packSize: '300 g', form: 'Collagen powder', serving: 'Use the measured serving on the supplied label; source and allergens must be confirmed.' },
+  moringa: { price: 85, packSize: '100 g', form: 'Moringa leaf powder', serving: 'Mix into food as directed on the pack. Leaf powder is different from concentrated extracts.' },
+  'sea-moss': { price: 180, packSize: '100 g', form: 'Dried sea moss', serving: 'Follow supplier preparation and serving directions; confirm species and iodine content before use.' },
+  'bay-leaves': { price: 35, packSize: '25 g', form: 'Whole dried bay leaves', serving: 'Infuse a leaf in a simmering dish and remove all whole leaves before serving.' },
+  cinnamon: { price: 55, packSize: '75 g', form: 'Cinnamon quills', serving: 'Infuse a quill in tea or a simmering dish; remove before serving.' },
+  'chia-seeds': { price: 75, packSize: '250 g', form: 'Whole chia seeds', serving: 'Soak fully in sufficient liquid before eating. Follow the pack serving and preparation ratio.' },
+  ashwagandha: { price: 165, packSize: '60 capsules', form: 'Ashwagandha root capsules', serving: 'Follow the actual label for capsule strength, dose and frequency; confirm suitability with a practitioner.' },
+};
+
 export const products = ingredients.map(product => ({
   ...product,
-  price: /** @type {number | null} */ (null),
-  currency: /** @type {string | null} */ (null),
-  packSize: /** @type {string | null} */ (null),
+  images: [
+    { key: `${product.slug}-product`, label: 'The product' },
+    { key: product.slug, label: product.slug === 'hibiscus' ? 'The packaging' : 'The ingredient' },
+    ...(product.slug === 'hibiscus' ? [
+      { key: 'hibiscus-in-use', label: 'Tea, ready to enjoy' },
+      { key: 'rituals-preparation', label: 'Preparing your tea' },
+      { key: 'rituals-model', label: 'Your everyday ritual' },
+    ] : [
+      { key: `${product.slug}-preparation`, label: 'Your preparation ritual' },
+      { key: `${product.slug}-serving`, label: 'A moment to enjoy' },
+    ]),
+  ],
+  ...offers[product.slug],
+  currency: 'ZAR',
   collection: productGuides[product.slug].collection,
   guide: productGuides[product.slug],
 }));
@@ -24,11 +47,12 @@ export const findProduct = (slug) => products.find(product => product.slug === s
 
 export function prepareEnquiry(draft) {
   const name = String(draft.name || '').trim();
+  const surname = String(draft.surname || '').trim();
   const email = String(draft.email || '').trim();
+  const phone = String(draft.phone || '').trim();
   const message = String(draft.message || '').trim();
-  if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !message) {
-    return { ok: false, text: 'Please add your name, a valid email address and a message.' };
+  if (!name || !surname || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !phone || !message) {
+    return { ok: false, text: 'Please add your first name, surname, a valid email address, phone number and a message.' };
   }
-  const ingredient = findProduct(draft.ingredient)?.name || 'General enquiry';
-  return { ok: true, text: `Hello Herby Health,\n\n${message}\n\nIngredient: ${ingredient}\nName: ${name}\nEmail: ${email}` };
+  return { ok: true, text: `Hello Herby Health,\n\n${message}\n\nFirst name: ${name}\nSurname: ${surname}\nEmail: ${email}\nPhone: ${phone}` };
 }
