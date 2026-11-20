@@ -85,6 +85,16 @@ test('persistent API protects owner data and connects commerce and inbox', async
       assert.equal((await request('/api/enquiries', 'POST', bad, false)).response.status, 400);
     });
     await t.test('settings are validated and overview/activity reflect real records', async () => {
+      const profiles = { instagram: 'https://www.instagram.com/herby-test/', facebook: 'https://www.facebook.com/herby-test/', x: 'https://x.com/herby_test', googleBusiness: 'https://maps.app.goo.gl/test-profile' };
+      assert.equal((await request('/api/admin/settings', 'PATCH', profiles)).response.status, 200);
+      const publicSettings = (await request('/api/catalogue', 'GET', undefined, false)).value.settings;
+      for (const [key, value] of Object.entries(profiles)) assert.equal(publicSettings[key], value);
+      for (const [key, value] of Object.entries({ facebook: 'javascript:alert(1)', x: 'https://x.com.evil.example/profile', googleBusiness: 'https://evil.example/maps', instagram: 'https://user:password@instagram.com/profile' })) {
+        assert.equal((await request('/api/admin/settings', 'PATCH', { [key]: value })).response.status, 400, key);
+      }
+      assert.equal((await request('/api/admin/settings', 'PATCH', { facebook: '', x: '', googleBusiness: '' })).response.status, 200);
+      const cleared = (await request('/api/catalogue', 'GET', undefined, false)).value.settings;
+      for (const key of ['facebook', 'x', 'googleBusiness']) assert.equal(cleared[key], '');
       assert.equal((await request('/api/admin/settings', 'PATCH', { courierFee: -1 })).response.status, 400);
       assert.equal((await request('/api/admin/settings', 'PATCH', { courierFee: 8500, freeDelivery: 70000, businessName: 'Herby Health' })).response.status, 200);
       assert.equal((await request('/api/catalogue', 'GET', undefined, false)).value.settings.courierFee, 8500);

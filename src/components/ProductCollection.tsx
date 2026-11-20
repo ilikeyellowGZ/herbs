@@ -7,6 +7,6 @@ export default function ProductCollection({ headingLevel = 'h2' }: { headingLeve
   return <section id="collection" className="collection section-gutters" aria-labelledby="collection-heading">
     <div className="collection-intro"><p className="eyebrow">The collection</p><Heading id="collection-heading">Eight ingredients for<br /><em>everyday rituals.</em></Heading><p>A few good things from nature.<br />For your cup, your kitchen, your own kind of day.</p></div>
     <div className="collection-rule"><span>The everyday essentials</span><span>Good things, simply chosen.</span></div>
-    <div className="product-grid">{products.filter(p => p.active !== false).map(product => <div key={product.slug}><ProductCard product={product} /></div>)}</div>
+    <div className="product-grid">{products.filter(p => p.active !== false).map(product => <div key={product.slug}><ProductCard product={product} showPrice={false} /></div>)}</div>
   </section>;
 }

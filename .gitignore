@@ -2,6 +2,8 @@ node_modules/
 dist/
 dist-server/
 .vite/
+.wrangler/
+.dev.vars*
 *.tsbuildinfo
 artifacts/
 .local/

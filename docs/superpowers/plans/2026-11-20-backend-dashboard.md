@@ -6,9 +6,9 @@
 
 **Spec:** `docs/superpowers/specs/2026-11-20-backend-dashboard-design.md`
 
-- [ ] Add API integration tests covering protected routes, login/CSRF/logout, server prices, stock, idempotency, inbox/uploads, and persistence; run them to establish failure.
-- [ ] Add database schema/seeding, scrypt owner CLI, opaque sessions, validation, transactional commerce, private uploads, settings, and activity APIs.
-- [ ] Add shared API types and storefront catalogue synchronization. Connect checkout submission and contact attachments; update conflicting preview copy and privacy/help content.
-- [ ] Add responsive admin shell, login, overview, orders, product editor, customers, inbox, settings and activity. Reuse existing typography, palette, and accessible controls.
-- [ ] Remove the footer following-pointer badge. Document server setup, account creation, deployment, backup and feature boundaries.
-- [ ] Run unit/integration tests, production build, dependency audit and browser flows at three widths; resolve observed defects.
+- [x] Add API integration tests covering protected routes, login/CSRF/logout, server prices, stock, idempotency, inbox/uploads, and persistence; run them to establish failure.
+- [x] Add database schema/seeding, scrypt owner CLI, opaque sessions, validation, transactional commerce, private uploads, settings, and activity APIs.
+- [x] Add shared API types and storefront catalogue synchronization. Connect checkout submission and contact attachments; update conflicting preview copy and privacy/help content.
+- [x] Add responsive admin shell, login, overview, orders, product editor, customers, inbox, settings and activity. Reuse existing typography, palette, and accessible controls.
+- [x] Remove the footer following-pointer badge. Document server setup, account creation, deployment, backup and feature boundaries.
+- [x] Run unit/integration tests, production build, dependency audit and browser flows at three widths; resolve observed defects.

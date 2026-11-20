@@ -7,16 +7,18 @@ import { money, orderRequest, provinces, validateCheckout } from '../data/shoppi
 import { useStore } from '../components/StoreContext';
 import { api, json } from '../lib/api';
 import { orderSubmissionKey, clearOrderSubmission } from '../lib/order-submission';
+import { paystackUrl, readPaymentSession, savePaymentSession, type PaymentSession } from '../lib/payment-session';
 
 type Details = { name: string; email: string; phone: string; address: string; city: string; province: string; postalCode: string; notes: string };
 const initialDetails: Details = { name: '', email: '', phone: '', address: '', city: '', province: '', postalCode: '', notes: '' };
 
 export default function Checkout() {
   const { cart, ready, count, storageError, summarise, clear } = useCart();
-  const { settings, products, connected, refresh } = useStore();
+  const { settings, products, integrations, connected, refresh } = useStore();
   const [busy, setBusy] = useState(false);
   const [submissionError, setSubmissionError] = useState('');
-  const [placed, setPlaced] = useState<{ reference: string; total: number } | null>(null);
+  const [placed, setPlaced] = useState<{ reference: string; total: number; emailReady?: boolean } | null>(null);
+  const [pendingPayment, setPendingPayment] = useState<PaymentSession | null>(null);
   const [details, setDetails] = useState<Details>(initialDetails);
   const [method, setMethod] = useState<'courier' | 'collection'>('courier');
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -32,6 +34,18 @@ export default function Checkout() {
   useEffect(() => { setCopyStatus(''); setShowRequest(false); }, [cart, method]);
   useEffect(() => { if (!settings.collectionEnabled) setMethod('courier'); }, [settings.collectionEnabled]);
   useEffect(() => { if (placed) reviewHeading.current?.focus(); }, [placed]);
+  useEffect(() => { const saved = readPaymentSession(); if (saved && !saved.settled) setPendingPayment(saved); }, []);
+
+  async function beginPayment(saved: PaymentSession) {
+    const payment = await api<{ authorizationUrl: string; reference: string }>('/payments/initialize', json('POST', { orderId: saved.orderId, token: saved.token }));
+    savePaymentSession({ ...saved, reference: payment.reference });
+    window.location.assign(paystackUrl(payment.authorizationUrl));
+  }
+  async function resumePayment() {
+    if (!pendingPayment || busy) return;
+    setBusy(true); setSubmissionError('');
+    try { await beginPayment(pendingPayment); } catch (e) { setSubmissionError((e as Error).message); setBusy(false); }
+  }
 
   async function place() {
     if (busy || placed) return;
@@ -39,8 +53,12 @@ export default function Checkout() {
     const payload = { items: cart, details, method, expectedTotal: summary.total };
     try {
       const key = await orderSubmissionKey(payload);
-      const result = await api<{ reference: string; total: number }>('/orders', { ...json('POST', payload), headers: { 'Idempotency-Key': key } });
-      setPlaced(result); clearOrderSubmission(); clear(); void refresh();
+      const result = await api<{ id: string; reference: string; total: number; paymentToken: string; paymentReady: boolean; paymentMode: 'test' | 'live'; emailReady?: boolean }>('/orders', { ...json('POST', payload), headers: { 'Idempotency-Key': key } });
+      if (result.paymentReady) {
+        const saved = { orderId: result.id, token: result.paymentToken, orderReference: result.reference, total: result.total, mode: result.paymentMode };
+        savePaymentSession(saved); setPendingPayment(saved);
+        await beginPayment(saved);
+      } else { setPlaced({ ...result, emailReady: integrations.emailEnabled }); clearOrderSubmission(); clear(); void refresh(); }
     } catch (e) { setSubmissionError((e as Error).message); await refresh(); } finally { setBusy(false); }
   }
 
@@ -73,7 +91,8 @@ export default function Checkout() {
   }
 
   if (!ready) return <section className="checkout-page section-gutters"><h1>Checkout</h1><p role="status">Getting your bag ready…</p></section>;
-  if (placed) return <section className="checkout-page section-gutters"><div className="checkout-empty cart-empty"><Check size={40} strokeWidth={1} /><p className="eyebrow">A little nature, one step closer</p><h1 ref={reviewHeading} tabIndex={-1}>Your request is with us.</h1><p>Order reference <strong>{placed.reference}</strong><br />Total: {money(placed.total)}</p><p>Your order request has been saved. No payment has been taken. Herby Health will confirm availability, payment arrangements and delivery with you.</p><p>Keep your reference for any questions. An email confirmation is not sent automatically.</p><Link className="solid-button" to="/collection">Back to the collection</Link></div></section>;
+  if (pendingPayment) return <section className="checkout-page section-gutters"><div className="payment-result"><ShoppingBag size={40} strokeWidth={1} /><p className="eyebrow">Your order, safely saved</p><h1>One little step<br />to your everyday.</h1><p>Order <strong>{pendingPayment.orderReference}</strong><br />Total: {money(pendingPayment.total)}</p><p>Your order is saved. Continue to Paystack to complete payment, or check its status if you have already paid.</p>{pendingPayment.mode === 'test' && <p className="shopping-preview">Test mode · no live payment is collected.</p>}{submissionError && <p className="field-error" role="alert">{submissionError}</p>}<div className="payment-result__actions"><button className="solid-button" disabled={busy} onClick={resumePayment}>{busy ? 'Opening Paystack…' : 'Continue to Paystack'}</button><Link className="text-link" to="/checkout/payment">Check payment status</Link><Link className="text-link" to="/contact">Ask about this order</Link></div></div></section>;
+  if (placed) return <section className="checkout-page section-gutters"><div className="checkout-empty cart-empty"><Check size={40} strokeWidth={1} /><p className="eyebrow">A little nature, one step closer</p><h1 ref={reviewHeading} tabIndex={-1}>Your request is with us.</h1><p>Order reference <strong>{placed.reference}</strong><br />Total: {money(placed.total)}</p><p>Your order request has been saved. No payment has been taken. Herby Health will confirm availability, payment arrangements and delivery with you.</p><p>{placed.emailReady ? 'A confirmation and invoice have been queued for your email address.' : 'Keep your reference for any questions. Email delivery is not configured yet.'}</p><Link className="solid-button" to="/collection">Back to the collection</Link></div></section>;
   if (!count) return <section className="checkout-page section-gutters"><div className="cart-empty checkout-empty"><ShoppingBag size={40} strokeWidth={1} /><p className="eyebrow">Your everyday essentials</p><h1>Your bag is still growing.</h1><p>Add a little nature to your day before checking out.</p><Link className="solid-button" to="/collection">Explore the collection<ArrowRight size={18} /></Link></div></section>;
 
   return <section className="checkout-page section-gutters">
@@ -83,7 +102,7 @@ export default function Checkout() {
     <div className="checkout-preview"><p><strong>Order request</strong> · Review your details, then submit your request to Herby Health. No payment is collected here. We will confirm availability and payment arrangements with you.</p></div>
     {!connected && <p className="field-error" role="alert">The order service is temporarily unavailable. Your bag is saved; please try again shortly.</p>}{storageError && <p role="status" className="cart-storage-note">Your browser could not save this bag. Keep this page open while reviewing your request.</p>}
     <div className="checkout-layout"><div className="checkout-main">
-      {review ? <div className="checkout-review"><p className="eyebrow">One last look</p><h2 ref={reviewHeading} tabIndex={-1}>Your order, considered.</h2><p>Check your details and the total below, then submit your order request. Please keep the reference shown after submission.</p><div className="review-details"><h3>Contact</h3><p>{details.name}<br />{details.email}<br />{details.phone}</p><h3>{method === 'courier' ? 'Courier delivery' : 'Gauteng collection'}</h3><p>{method === 'courier' ? <>{details.address}<br />{details.city}, {details.province} {details.postalCode}<br />South Africa</> : 'Free collection by arrangement. Location and timing must be confirmed.'}</p>{details.notes && <><h3>Your note</h3><p>{details.notes}</p></>}</div><button className="text-link" onClick={() => { setReview(false); requestAnimationFrame(() => document.getElementById('checkout-name')?.focus()); }}>Edit contact & delivery details</button><div className="review-actions"><button type="button" className="solid-button" disabled={busy || !connected} onClick={place}>{busy ? 'Submitting…' : 'Submit order request'}</button><button type="button" className="text-link" onClick={copy}>Copy order request<Copy size={18} strokeWidth={1.3} /></button><Link className="text-link" to="/contact">Contact Herby Health<ArrowRight size={17} /></Link></div>{submissionError && <p className="field-error" role="alert">{submissionError}</p>}<p className="copy-status" role="status">{copyStatus}</p>{showRequest && <div className="checkout-field"><label htmlFor="order-request">Your order request</label><textarea id="order-request" readOnly value={request} rows={14} onFocus={event => event.currentTarget.select()} /></div>}<p className="shopping-preview">Submitting saves your order and contact details for the Herby Health team. No payment is taken. Read our Privacy policy for how your information is handled.</p></div> :
+      {review ? <div className="checkout-review"><p className="eyebrow">One last look</p><h2 ref={reviewHeading} tabIndex={-1}>Your order, considered.</h2><p>{integrations.paymentsEnabled ? 'Check your details and total, then continue to secure Paystack checkout. Your payment is confirmed by our server.' : 'Check your details and the total below, then submit your order request. Please keep the reference shown after submission.'}</p><div className="review-details"><h3>Contact</h3><p>{details.name}<br />{details.email}<br />{details.phone}</p><h3>{method === 'courier' ? 'Courier delivery' : 'Gauteng collection'}</h3><p>{method === 'courier' ? <>{details.address}<br />{details.city}, {details.province} {details.postalCode}<br />South Africa</> : 'Free collection by arrangement. Location and timing must be confirmed.'}</p>{details.notes && <><h3>Your note</h3><p>{details.notes}</p></>}</div><button className="text-link" onClick={() => { setReview(false); requestAnimationFrame(() => document.getElementById('checkout-name')?.focus()); }}>Edit contact & delivery details</button><div className="review-actions"><button type="button" className="solid-button" disabled={busy || !connected} onClick={place}>{busy ? 'Submitting…' : 'Submit order request'}</button><button type="button" className="text-link" onClick={copy}>Copy order request<Copy size={18} strokeWidth={1.3} /></button><Link className="text-link" to="/contact">Contact Herby Health<ArrowRight size={17} /></Link></div>{submissionError && <p className="field-error" role="alert">{submissionError}</p>}<p className="copy-status" role="status">{copyStatus}</p>{showRequest && <div className="checkout-field"><label htmlFor="order-request">Your order request</label><textarea id="order-request" readOnly value={request} rows={14} onFocus={event => event.currentTarget.select()} /></div>}<p className="shopping-preview">Continuing saves your order and contact details for Herby Health. Payment is only collected on Paystack when online checkout is enabled. Read our Privacy policy for how your information is handled.</p></div> :
       <form ref={form} onSubmit={submit} noValidate>
         <fieldset><legend>First, a little about you.</legend><p>All fields are required unless marked optional.</p><div className="checkout-fields">{field('name', 'Full name', 'name')}{field('email', 'Email address', 'email', 'email', 254)}{field('phone', 'Phone number', 'tel', 'tel', 30)}</div></fieldset>
         <fieldset className="delivery-fieldset"><legend>How shall it find you?</legend><div className="delivery-options">

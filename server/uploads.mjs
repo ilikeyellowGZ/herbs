@@ -5,8 +5,8 @@ import { join, basename, extname } from 'node:path';
 import { fail } from './validation.mjs';
 
 const mimeTypes = { '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp', '.gif': 'image/gif', '.avif': 'image/avif', '.pdf': 'application/pdf', '.doc': 'application/msword', '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', '.txt': 'text/plain' };
-export function uploads(dataDir) {
-  return multer({ storage: multer.diskStorage({ destination: join(dataDir, 'uploads'), filename: (_req, _file, cb) => cb(null, randomUUID()) }), limits: { files: 5, fileSize: 10 * 1024 * 1024, fields: 8, fieldSize: 16000, parts: 13 }, fileFilter: (_req, file, cb) => {
+export function uploads(dataDir, { memory = false } = {}) {
+  return multer({ storage: memory ? multer.memoryStorage() : multer.diskStorage({ destination: join(dataDir, 'uploads'), filename: (_req, _file, cb) => cb(null, randomUUID()) }), limits: { files: 5, fileSize: 10 * 1024 * 1024, fields: 8, fieldSize: 16000, parts: 13 }, fileFilter: (_req, file, cb) => {
     const expected = mimeTypes[extname(file.originalname).toLowerCase()];
     if (!expected || (file.mimetype && file.mimetype !== expected && file.mimetype !== 'application/octet-stream')) return cb(new Error('Choose a supported image, PDF, Word document or text file.'));
     cb(null, true);
@@ -14,10 +14,13 @@ export function uploads(dataDir) {
 }
 export async function validateFiles(files) {
   for (const file of files) {
-    const handle = await open(file.path, 'r');
     const buffer = Buffer.alloc(512);
     let bytesRead;
-    try { ({ bytesRead } = await handle.read(buffer, 0, 512, 0)); } finally { await handle.close(); }
+    if (file.buffer) bytesRead = file.buffer.copy(buffer, 0, 0, 512);
+    else {
+      const handle = await open(file.path, 'r');
+      try { ({ bytesRead } = await handle.read(buffer, 0, 512, 0)); } finally { await handle.close(); }
+    }
     const b = buffer.subarray(0, bytesRead), extension = extname(file.originalname).toLowerCase();
     const signature = b.subarray(0, 16).toString('hex');
     const valid = file.size > 0 && (
@@ -36,4 +39,4 @@ export async function validateFiles(files) {
     file.safeMime = mimeTypes[extension];
   }
 }
-export async function cleanFiles(files = []) { await Promise.all(files.map(file => unlink(file.path).catch(() => {}))); }
+export async function cleanFiles(files = []) { await Promise.all(files.filter(file => file.path).map(file => unlink(file.path).catch(() => {}))); }

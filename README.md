@@ -117,7 +117,7 @@ Collection, Rituals, Our Story, Contact and FAQs have dedicated pages at `/colle
 
 The help centre at `/get-help` has nine topic groups, 23 searchable articles, grid/list layouts and links to contact support and FAQs. Topic and article URLs support reload and browser history. Edit content in `src/data/help.mjs`; article counts update automatically. Run `node scripts/qa-help.mjs` against the production preview (or set `QA_URL`) to verify responsive layouts, search, article links, history, keyboard focus and accessibility. Regenerate its responsive garden banners with `python scripts/prepare-help-images.py`.
 
-**Say hello** opens the contact form. Set the verified Instagram profile and public email, phone and address in Dashboard → Settings. Blank contact fields are omitted from the public site.
+**Say hello** opens the contact form. Set public email, phone and address in Dashboard → Settings. Blank contact fields are omitted from the public site. The footer's Socials column includes Instagram, Facebook, X and Google Business Profile; add their verified HTTPS profile URLs in Dashboard → Settings → Social profiles. Empty profiles appear as plain text until linked. Use a public Google Maps or Business Profile share link. Saved links open in a new tab.
 
 Run `node scripts/qa-pages.mjs` for page navigation, responsive layout, enquiry and footer cursor checks. Set `QA_URL=http://localhost:4173` to check the production preview.
 

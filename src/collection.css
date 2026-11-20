@@ -31,7 +31,7 @@
 .catalogue-select option { background: var(--porcelain); color: var(--olive); }
 .catalogue-price-note { font-size: var(--text-sm); margin-block: 4px 32px; max-width: 65ch; }
 .catalogue-reset { display: inline-flex; gap: 12px; align-items: center; font-size: var(--text-sm); min-height: 44px; padding: 0; margin-bottom: 20px; text-decoration: underline; text-underline-offset: 4px; }
-.catalogue-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px 24px; }
+.catalogue-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: 1fr; gap: 48px 24px; }
 .catalogue-card { min-width: 0; display: flex; flex-direction: column; }
 .catalogue-card__photo { position: relative; display: block; width: 100%; aspect-ratio: 4/5; padding: 0; background: var(--porcelain); overflow: hidden; }
 .catalogue-card__photo img { transition: transform 350ms ease; }

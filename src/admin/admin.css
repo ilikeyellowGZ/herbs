@@ -194,3 +194,6 @@
   .admin-stock-list li { flex-wrap: wrap; }
 }
 @media (prefers-reduced-motion: reduce) { .admin-sidebar nav a, .admin-button { transition: none; } }
+.admin-social-settings { min-width: 0; margin: 0; padding: 0; border: 0; display: grid; gap: 16px; }
+.admin-social-settings legend { font: 400 24px/1.2 var(--serif); padding: 0; margin-bottom: 16px; }
+.admin-social-settings > p { margin: 0; font-size: var(--text-sm); }

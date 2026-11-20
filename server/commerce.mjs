@@ -27,7 +27,7 @@ export function quote(db, input) {
   const shipping = input.method === 'collection' || subtotal >= settings.freeDelivery ? 0 : settings.courierFee;
   return { items, subtotal, shipping, total: subtotal + shipping };
 }
-export function placeOrder(db, input, key) {
+export function placeOrder(db, input, key, onCreated) {
   object(input); object(input.details);
   if (!Array.isArray(input.items)) fail('Add ingredients to your bag.');
   text(input.details.name, 'full name', 2, 100); email(input.details.email); phone(input.details.phone);
@@ -48,15 +48,17 @@ export function placeOrder(db, input, key) {
     db.prepare('INSERT INTO orders (id,reference,idempotency_key,request_hash,customer,method,items,subtotal,shipping,total,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)').run(id, reference, key, requestHash, JSON.stringify(details), input.method, JSON.stringify(summary.items), summary.subtotal, summary.shipping, summary.total, now, now);
     for (const item of summary.items) if (item.tracked) db.prepare('UPDATE products SET stock=stock-?,updated_at=? WHERE slug=?').run(item.quantity, now, item.slug);
     activity(db, 'Storefront', 'Received order request', reference);
+    onCreated?.(mapOrder(db.prepare('SELECT * FROM orders WHERE id=?').get(id)));
     return { id, reference, total: summary.total, status: 'pending', payment: 'unpaid' };
   });
 }
 const publicOrder = order => ({ id: order.id, reference: order.reference, total: order.total, status: order.status, payment: order.payment });
-export function updateOrder(db, id, input, actor) {
+export function updateOrder(db, id, input, actor, onChanged) {
   object(input);
   return transaction(db, () => {
     const raw = db.prepare('SELECT * FROM orders WHERE id=?').get(id);
     if (!raw) fail('Order not found.', 404);
+    if (input.payment !== undefined && input.payment !== raw.payment && db.prepare('SELECT reference FROM payment_attempts WHERE order_id=?').get(id)) fail('Paystack manages this payment record. Use verified provider updates; this form does not charge or refund.', 409);
     const transitions = { pending: ['pending', 'confirmed', 'cancelled'], confirmed: ['confirmed', 'fulfilled', 'cancelled'], fulfilled: ['fulfilled'], cancelled: ['cancelled'] };
     const status = input.status ?? raw.status, payment = input.payment ?? raw.payment;
     if (!transitions[raw.status].includes(status)) fail('This order cannot move to that status.', 409);
@@ -66,6 +68,8 @@ export function updateOrder(db, id, input, actor) {
     if (status === 'cancelled' && raw.status !== 'cancelled') for (const item of JSON.parse(raw.items)) if (item.tracked) db.prepare('UPDATE products SET stock=CASE WHEN stock IS NULL THEN NULL ELSE stock+? END,updated_at=? WHERE slug=?').run(item.quantity, new Date().toISOString(), item.slug);
     db.prepare('UPDATE orders SET status=?,payment=?,notes=?,updated_at=? WHERE id=?').run(status, payment, notes, new Date().toISOString(), id);
     activity(db, actor, `Updated order: ${status}, ${payment}`, raw.reference);
-    return mapOrder(db.prepare('SELECT * FROM orders WHERE id=?').get(id));
+    const updated = mapOrder(db.prepare('SELECT * FROM orders WHERE id=?').get(id));
+    onChanged?.(updated, mapOrder(raw));
+    return updated;
   });
 }

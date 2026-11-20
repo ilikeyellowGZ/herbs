@@ -16,8 +16,9 @@ try {
     await page.getByRole('searchbox', { name: 'Search ingredients' }).waitFor();
     assert.equal(await page.locator('main h1').count(), 1);
     assert.equal(await page.locator('.catalogue-card').count(), 8);
-    assert.equal(await page.locator('.catalogue-card .catalogue-price').count(), 8);
-    assert.equal(await page.locator('#collection-sort option[value="price-asc"]').isDisabled(), false);
+    assert.equal(await page.locator('.catalogue-card .catalogue-price').count(), 0);
+    assert.equal(await page.locator('#collection-sort option[value^="price-"]').count(), 0);
+    assert.equal(await page.locator('.catalogue-card .add-to-cart a').count(), 8);
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `Overflow at ${width}`);
     for (const photo of await page.locator('.catalogue-card__photo').all()) {
       await photo.scrollIntoViewIfNeeded();
@@ -49,6 +50,8 @@ try {
     await page.getByRole('button', { name: 'Benefits, use & details for Chia Seeds', exact: true }).click();
     const dialog = page.getByRole('dialog');
     await dialog.waitFor();
+    assert.equal(await dialog.locator('.catalogue-price').count(), 0);
+    assert.equal(await dialog.getByRole('link', { name: 'Add Chia Seeds to cart', exact: true }).getAttribute('href'), '/products/chia-seeds');
     await dialog.getByRole('button', { name: 'How to use', exact: true }).click();
     assert.match(await dialog.textContent(), /swell fully/);
     await dialog.getByRole('button', { name: 'Suitability & things to know', exact: true }).click();

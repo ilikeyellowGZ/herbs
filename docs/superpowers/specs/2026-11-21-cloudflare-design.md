@@ -1,0 +1,11 @@
+# Full Cloudflare hosting
+
+Approved by the user on 21 November 2026: host the website, API, database and private uploads together on Cloudflare, independent of this computer. Reuse the existing `herbs` Worker in the connected account and enable its workers.dev address. Do not attach an unrelated domain.
+
+Serve production Vite assets through Workers Static Assets, with the Worker controlling API routing, direct route HTML, security headers and admin shell. All API traffic reaches one SQLite-backed Durable Object, retaining the current synchronous SQLite business rules and atomic stock/order updates through storage.transactionSync. Reuse the existing Express API; inject storage and file adapters rather than fork the API. Preserve Node development and existing backend tests.
+
+R2 is not enabled on the account. Store uploads privately as bounded 256KiB SQLite BLOB chunks in the same Durable Object; keep the existing five-file/10MiB-per-file limits and signature checks. Commit file chunks and enquiry metadata in one database transaction, and require owner authentication for download. No new billing subscription or R2 activation.
+
+Use the existing scrypt password hashes and secure cookie/CSRF controls. Rate limits use a client address supplied only by the trusted Worker ingress; ignore forged incoming internal headers. Use exact public origin validation, no wildcard CORS and no caching of API/admin responses. Deploy with no public signup or default owner password. Migrate the local owner and business data using a private, token-protected, one-time import; never print credentials or commit snapshots. Keep a local SQLite backup. Remove the migration secret after successful import. Existing session and rate-limit rows are not migrated.
+
+Verify production build, backend regression tests, adapter transaction rollback/chunk roundtrip, actual Wrangler runtime API checks, direct route and admin rendering, uploads, wrong origins, cookies, health, security/cache headers and responsive browser smoke checks. Run all destructive commerce tests against an isolated local Durable Object, not the live store. Publish only after local checks pass, verify the public deployment and document repeatable deployment, private migration and storage recovery.
