@@ -46,7 +46,7 @@ try {
     await page.getByRole('searchbox', { name: 'Search ingredients' }).fill('chia');
     await page.waitForFunction(() => document.querySelectorAll('.catalogue-card').length === 1);
     await page.reload();
-    await page.getByRole('button', { name: 'Read the Chia Seeds guide', exact: true }).click();
+    await page.getByRole('button', { name: 'Benefits, use & details for Chia Seeds', exact: true }).click();
     const dialog = page.getByRole('dialog');
     await dialog.waitFor();
     await dialog.getByRole('button', { name: 'How to use', exact: true }).click();
@@ -65,8 +65,8 @@ try {
     assert.equal(await page.evaluate(() => document.activeElement?.getAttribute('aria-label')), 'Close ingredient details');
     await page.keyboard.press('Escape');
     await dialog.waitFor({ state: 'hidden' });
-    assert.equal(await page.evaluate(() => document.activeElement?.getAttribute('aria-label')), 'Read the Chia Seeds guide');
-    await page.getByRole('button', { name: 'Read the Chia Seeds guide', exact: true }).click();
+    assert.equal(await page.evaluate(() => document.activeElement?.getAttribute('aria-label')), 'Benefits, use & details for Chia Seeds');
+    await page.getByRole('button', { name: 'Benefits, use & details for Chia Seeds', exact: true }).click();
     await dialog.getByRole('button', { name: 'Enquire about Chia Seeds', exact: true }).click();
     await page.waitForURL('**/contact');
     await page.locator('select[name="ingredient"]').waitFor();

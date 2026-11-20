@@ -1,7 +1,6 @@
 ﻿import { Link } from 'react-router-dom';
 import { ArrowUpRight } from 'lucide-react';
 import ResponsiveImage from '../components/ResponsiveImage';
-import '../rituals.css';
 
 export default function Rituals() {
   return (
@@ -13,7 +12,7 @@ export default function Rituals() {
           <p>A cup in your hands. A moment to yourself.<br />Good things begin with the little things.</p>
         </div>
         <figure className="rituals-hero-figure">
-          <ResponsiveImage name="rituals-model" className="rituals-hero-image" sizes="(min-width: 1488px) 1440px, calc(100vw - 48px)" priority />
+          <ResponsiveImage name="rituals-model" className="rituals-hero-image" sizes="(max-width: 640px) calc(150vw - 72px), (min-width: 1488px) 1440px, calc(100vw - 48px)" priority />
           <figcaption className="rituals-hero-caption">
             <span>Hibiscus. Warm light. A little time.</span>
             <Link to="/products/hibiscus" className="text-link">Meet your slow-down cup <ArrowUpRight size={17} aria-hidden="true" /></Link>
@@ -43,19 +42,19 @@ export default function Rituals() {
           <Link to="/products/hibiscus" className="ritual-card">
             <span className="ritual-time">When the kettle goes on</span>
             <h3>The slow-down cup.</h3>
-            <p>Hibiscus, warm water, a little time.<br />Some things need very little else.</p>
+            <p>Hibiscus, warm water, a little time.<br />{' '}Some things need very little else.</p>
             <span className="text-link">Put the kettle on <ArrowUpRight size={17} aria-hidden="true" /></span>
           </Link>
           <Link to="/products/chia-seeds" className="ritual-card">
             <span className="ritual-time">Before the day begins</span>
             <h3>Morning, unhurried.</h3>
-            <p>A bowl left overnight. Something fresh.<br />A small favour for your future self.</p>
+            <p>A bowl left overnight. Something fresh.<br />{' '}A small favour for your future self.</p>
             <span className="text-link">Meet chia seeds <ArrowUpRight size={17} aria-hidden="true" /></span>
           </Link>
           <Link to="/products/bay-leaves" className="ritual-card">
             <span className="ritual-time">Something on the stove</span>
             <h3>A leaf in the pot.</h3>
-            <p>Bay, a gentle simmer, the kitchen<br />smelling like someone’s home.</p>
+            <p>Bay, a gentle simmer, the kitchen<br />{' '}smelling like someone’s home.</p>
             <span className="text-link">Back to the kitchen <ArrowUpRight size={17} aria-hidden="true" /></span>
           </Link>
         </div>

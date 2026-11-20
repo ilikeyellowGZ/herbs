@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import './styles.css';
 import './collection.css';
+import './rituals.css';
 
 if (import.meta.env.DEV && import.meta.env.VITE_REACT_TOOLS !== 'false') {
   void import('react-grab');

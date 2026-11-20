@@ -15,11 +15,11 @@ const serverReady = () => false;
 
 function CollectionCard({ product, onOpen, priority }: { product: Product; onOpen: (product: Product) => void; priority: boolean }) {
   return <article className="catalogue-card" aria-labelledby={`ingredient-${product.slug}`}>
-    <button className="catalogue-card__photo" onClick={() => onOpen(product)} aria-label={`Explore ${product.name}`} aria-haspopup="dialog">
+    <button className="catalogue-card__photo" onClick={() => onOpen(product)} aria-label={`Get to know ${product.name}`} aria-haspopup="dialog">
       <ResponsiveImage name={`${product.slug}-product`} priority={priority} sizes="(max-width: 640px) calc(100vw - 48px), (max-width: 1100px) 46vw, (min-width: 1440px) 448px, 31vw" />
       <span>Get to know {product.name}<BookOpen size={18} strokeWidth={1.4} /></span>
     </button>
-    <div className="catalogue-card__body"><p className="catalogue-category">{product.category}</p><h2 id={`ingredient-${product.slug}`}>{product.name}</h2><p className="catalogue-description">{product.guide.summary}</p><p className="catalogue-benefit"><Leaf size={16} strokeWidth={1.4} /><span>{product.guide.benefits[0]}</span></p><div className="catalogue-card__bottom"><ProductPrice product={product} /><button className="catalogue-guide-button" onClick={() => onOpen(product)} aria-label={`Read the ${product.name} guide`} aria-haspopup="dialog">Benefits, use & details<BookOpen size={16} strokeWidth={1.4} /></button></div></div>
+    <div className="catalogue-card__body"><p className="catalogue-category">{product.category}</p><h2 id={`ingredient-${product.slug}`}>{product.name}</h2><p className="catalogue-description">{product.guide.summary}</p><p className="catalogue-benefit"><Leaf size={16} strokeWidth={1.4} /><span>{product.guide.benefits[0]}</span></p><div className="catalogue-card__bottom"><ProductPrice product={product} /><button className="catalogue-guide-button" onClick={() => onOpen(product)} aria-label={`Benefits, use & details for ${product.name}`} aria-haspopup="dialog">Benefits, use & details<BookOpen size={16} strokeWidth={1.4} /></button></div></div>
   </article>;
 }
 
