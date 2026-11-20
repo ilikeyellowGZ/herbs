@@ -58,7 +58,7 @@ export default function CatalogueBrowser() {
       { title: 'How much should I take?', content: 'Food preparation and supplement dosage are different. Follow the actual product label for amounts and frequency. We confirm the format and directions on enquiry; do not assume a universal scoop, capsule count or daily dose.' },
       { title: 'What are the prices and pack sizes?', content: 'Each ingredient is currently priced on enquiry. Ask us to confirm the available format, net contents, current price and stock before ordering. There is no checkout or confirmed retail offer on this site.' },
       { title: 'What about allergies and medication?', content: 'Request the complete ingredient list, allergen and cross-contact information for the actual product. Supplements can interact with medicines. Speak with a pharmacist or clinician if you take medication, have a condition, are pregnant or breastfeeding, or are choosing for a child.' },
-      { title: 'How do delivery and enquiries work?', content: 'Delivery areas, charges and timing are confirmed individually. The contact form currently prepares a copyable enquiry in preview mode; it does not send a message or place an order. You can also use the Say hello link to reach our Instagram profile.' },
+      { title: 'How do delivery and enquiries work?', content: 'Delivery areas, charges and timing are confirmed individually. The contact form currently prepares a copyable enquiry in preview mode; it does not send a message or place an order. Use Say hello to prepare your questions and check the contact page for available contact options.' },
     ]} /></section>
     <QuickView product={quick} onClose={() => setQuick(null)} />
   </>;
