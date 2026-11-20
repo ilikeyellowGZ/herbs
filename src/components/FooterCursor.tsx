@@ -9,7 +9,8 @@ export default function FooterCursor({ footer }: { footer: RefObject<HTMLElement
     const element = cursor.current;
     if (!region || !element) return;
     const enabled = window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)');
-    const response = parseFloat(getComputedStyle(element).getPropertyValue('--footer-cursor-lag')) || 200;
+    const lag = getComputedStyle(element).getPropertyValue('--footer-cursor-lag').trim();
+    const response = (parseFloat(lag) * (lag.endsWith('ms') ? 1 : 1000)) || 200;
     let frame = 0;
     let active = false;
     let x = 0;

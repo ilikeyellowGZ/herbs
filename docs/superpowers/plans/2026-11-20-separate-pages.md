@@ -10,8 +10,10 @@
 
 ## Tasks
 
-- [ ] Extract Collection, Rituals, Story and FAQs; wrap Contact with a route-level heading. Replace homepage sections with links.
-- [ ] Update shared navigation, product links, enquiry navigation, page metadata and prerender paths.
-- [ ] Add the circular logo cursor with cleanup and pointer/reduced-motion gates.
+- [x] Extract Collection, Rituals, Story and FAQs; wrap Contact with a route-level heading. Replace homepage sections with links.
+- [x] Update shared navigation, product links, enquiry navigation, page metadata and prerender paths.
+- [x] Add the circular logo cursor with cleanup and pointer/reduced-motion gates.
 - [ ] Link all Say hello actions to the confirmed Instagram profile.
-- [ ] Run production build, existing tests and browser checks for direct routes, navigation, selected enquiries, mobile layout, FAQ and cursor behavior.
+- [x] Run production build, existing tests and browser checks for direct routes, navigation, selected enquiries, mobile layout, FAQ and cursor behavior.
+
+Verification: production build and browser checks passed for all five routes at 375/768/1280px, ingredient-to-contact selection, draft persistence, FAQs, fine-pointer trailing, keyboard dismissal, reduced motion and touch. Instagram awaits a confirmed profile URL; shared links are ready through VITE_INSTAGRAM_URL. A concurrent catalogue-query test currently references a missing module; the existing collection/enquiry tests pass. React Doctor reports one existing ScrollExpand rAF warning; its effect already cancels the animation frame on cleanup.

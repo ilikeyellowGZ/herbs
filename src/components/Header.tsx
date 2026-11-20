@@ -7,7 +7,7 @@ import useDialogFocus from './useDialogFocus';
 import { pages } from '../data/pages.mjs';
 import SayHello from './SayHello';
 
-const links = pages.slice(0, 4).map(page => ({ label: page.label, href: page.path }));
+const links = pages.slice(0, 3).map(page => ({ label: page.label, href: page.path }));
 
 export default function Header() {
   const [query, setQuery] = useState('');

@@ -60,3 +60,9 @@ python scripts/prepare-assets.py
 This script requires Pillow. It only organises and resizes existing images and updates the runtime manifest; it never synthesises image content. Originals retain their filenames and are not overwritten.
 
 The enquiry form is in preview mode until a real contact endpoint is configured. Prices, ordering and WhatsApp are not connected.
+
+Collection, Rituals, Our Story, Contact and FAQs have dedicated pages at `/collection`, `/rituals`, `/our-story`, `/contact` and `/faqs`. Production builds prerender these pages for direct access.
+
+To connect every **Say hello** action to the company Instagram, copy `.env.example` to `.env.local` and set `VITE_INSTAGRAM_URL` to the confirmed full profile URL. Restart the development server or rebuild production after changing it. Until configured, these links open Contact. The profile handle has not yet been supplied.
+
+Run `node scripts/qa-pages.mjs` for page navigation, responsive layout, enquiry and footer cursor checks. Set `QA_URL=http://localhost:4173` to check the production preview.

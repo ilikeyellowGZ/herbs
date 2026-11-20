@@ -1,4 +1,6 @@
-export const products = [
+import { productGuides } from './product-guides.mjs';
+
+const ingredients = [
   { slug: 'hibiscus', name: 'Hibiscus', latin: 'Hibiscus sabdariffa', category: 'Botanical tea', note: 'Tart. Ruby-red. Quite lovely.', description: 'A deep ruby infusion with a bright, tart edge. Beautiful in your favourite cup, poured over ice, or shared slowly at the end of the day.', ritual: 'Steep the dried petals in freshly boiled water until the colour deepens. Strain, sip, and make it your own with a little honey or a slice of citrus.', character: 'Ruby-red · Floral · Bright', bottle: 'Hibiscus', moment: 'The slow-down cup', detail: 'The dried calyces of the hibiscus flower, known for their rich colour and lively, cranberry-like tartness.' },
   { slug: 'collagen', name: 'Collagen', latin: 'An everyday addition', category: 'Wellness supplement', note: 'A little addition to your routine.', description: 'A quiet addition to the daily routine. Explore our collagen offering and ask us about its source, format and how it might fit into your day.', ritual: 'Ask us about the available product and its preparation instructions before adding it to a drink or meal.', character: 'Simple · Considered · Everyday', bottle: 'Collagen', moment: 'The morning rhythm', detail: 'Enquire for the confirmed source, ingredient list and product information for our collagen offering.' },
   { slug: 'moringa', name: 'Moringa', latin: 'Moringa oleifera', category: 'Leaf & powder', note: 'A greener kind of everyday.', description: 'Earthy, green and full of character. Moringa brings the leaf to the kitchen, from a morning blend to an everyday cooking ritual.', ritual: 'Explore the leaf and powder formats with us. A small amount of moringa powder can bring an earthy note to a smoothie or bowl.', character: 'Green · Earthy · Leafy', bottle: 'Moringa', moment: 'A greener morning', detail: 'The small leaves of the moringa tree, enjoyed in dried leaf and finely milled forms. Ask us which formats are available.' },
@@ -8,6 +10,15 @@ export const products = [
   { slug: 'chia-seeds', name: 'Chia Seeds', latin: 'Salvia hispanica', category: 'Pantry staple', note: 'Small seeds. Endless little rituals.', description: 'Tiny, speckled seeds with a gentle flavour. A simple pantry companion for overnight bowls, breakfast jars and everyday baking.', ritual: 'Soak in your preferred milk until the seeds form a soft gel. Stir well, leave to rest, and finish with seasonal fruit.', character: 'Mild · Speckled · Adaptable', bottle: 'Chia-Seeds', moment: 'Breakfast, unhurried', detail: 'Whole chia seeds, known in the kitchen for their ability to absorb liquid and form a soft, spoonable texture.' },
   { slug: 'ashwagandha', name: 'Ashwagandha', latin: 'Withania somnifera', category: 'Root botanical', note: 'Rooted in a slower rhythm.', description: 'An earthy root with a long botanical history. Discover the ingredient, ask your questions, and find out more about our available offering.', ritual: 'Enquire for the confirmed format and product directions. Speak to a qualified practitioner about individual suitability before use.', character: 'Earthy · Rooted · Traditional', bottle: 'Ashwagandha', moment: 'A moment to pause', detail: 'The root of Withania somnifera. Ask us for the complete product information and directions for the available format.' },
 ];
+
+export const products = ingredients.map(product => ({
+  ...product,
+  price: null,
+  currency: null,
+  packSize: null,
+  collection: productGuides[product.slug].collection,
+  guide: productGuides[product.slug],
+}));
 
 export const findProduct = (slug) => products.find(product => product.slug === slug);
 

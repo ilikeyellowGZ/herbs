@@ -5,7 +5,8 @@ import { findProduct, products } from '../data/catalogue.mjs';
 import ResponsiveImage from '../components/ResponsiveImage';
 import BottleImage from '../components/BottleImage';
 import ProductCard from '../components/ProductCard';
-import Accordion from '../components/Accordion';
+import ProductPrice from '../components/ProductPrice';
+import ProductGuide from '../components/ProductGuide';
 import { useEnquiry } from '../components/EnquiryContext';
 
 export default function ProductPage() {
@@ -26,11 +27,7 @@ export default function ProductPage() {
           {active.type === 'bottle' ? <BottleImage product={product} /> : <ResponsiveImage name={active.key} priority sizes="(max-width: 880px) 100vw, 55vw" />}
           <span className="gallery-counter">{String(selected + 1).padStart(2, '0')} / {String(images.length).padStart(2, '0')}</span>
         </div><div className="gallery-thumbnails" aria-label="Product images">{images.map((image, index) => <button key={image.key} className={selected === index ? 'selected' : ''} onClick={() => setSelected(index)} aria-label={`View ${image.label.toLowerCase()}`} aria-pressed={selected === index}><ResponsiveImage name={image.type === 'bottle' ? `${product.slug}-product` : image.key} sizes="80px" alt="" /></button>)}<span>Good things, seen up close.</span></div></div>
-        <div className="product-details"><p className="eyebrow">{product.category}</p><h1>{product.name}</h1><p className="product-latin">{product.latin}</p><p className="product-description">{product.description}</p><div className="product-character"><Leaf size={17} strokeWidth={1.2} /><span>{product.character}</span></div><button className="solid-button product-enquire" onClick={() => enquire(product.slug)}>Enquire about {product.name}<ArrowUpRight size={19} strokeWidth={1.3} /></button><p className="availability-note">A personal conversation, from our collection to your day.</p><Accordion level={2} items={[
-          { title: 'The ingredient', content: product.detail },
-          { title: 'Your everyday ritual', content: product.ritual },
-          { title: 'Availability & product details', content: 'Please enquire for current pricing, available formats, contents and delivery arrangements. The bottle and carton images show concept packaging; final packaging will be confirmed with your enquiry.' },
-        ]} /><Link className="text-link product-help" to="/contact">A question before you begin?</Link></div>
+        <div className="product-details"><p className="eyebrow">{product.category}</p><h1>{product.name}</h1><p className="product-latin">{product.latin}</p><p className="product-description">{product.description}</p><div className="product-character"><Leaf size={17} strokeWidth={1.2} /><span>{product.character}</span></div><ProductPrice product={product} /><button className="solid-button product-enquire" onClick={() => enquire(product.slug)}>Enquire about {product.name}<ArrowUpRight size={19} strokeWidth={1.3} /></button><p className="availability-note">Pack size, ingredients and delivery confirmed personally.</p><ProductGuide product={product} level={2} /><Link className="text-link product-help" to="/contact">A question before you begin?</Link></div>
       </div>
     </section>
     <section className="product-ritual section-gutters"><div><p className="eyebrow">Make a little room</p><h2>{product.moment}<em>.</em></h2></div><div><p>{product.ritual}</p><p className="eyebrow">At your pace. In your own way.</p></div></section>
