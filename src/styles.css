@@ -45,12 +45,12 @@ section[id] { scroll-margin-top: 0; }
 
 /* The botanical masthead stays quiet over the photography. */
 .site-header { position: fixed; top: 0; left: 0; width: 100%; z-index: 30; transition: color .3s ease, background-color .3s ease; }
-.announcement { height: 28px; display: flex; align-items: center; justify-content: center; gap: 16px; background: var(--olive); color: var(--porcelain); font-size: 11px; letter-spacing: .035em; }
+.announcement { height: 28px; display: flex; align-items: center; justify-content: center; gap: 16px; background: color-mix(in srgb, var(--olive), transparent var(--hero-nav-blend, 0%)); color: var(--porcelain); font-size: 11px; letter-spacing: .035em; }
 .announcement span { opacity: .68; padding-left: 16px; border-left: 1px solid #fcfbf64d; }
 .nav-bar { height: 72px; display: flex; justify-content: space-between; align-items: center; padding: 0 var(--gutter); border-bottom: 1px solid transparent; }
 .header-dark { color: var(--porcelain); background: transparent; }
-.header-light { color: var(--olive); background: var(--porcelain); }
-.header-light .nav-bar { border-color: var(--rule); }
+.header-light { color: color-mix(in srgb, var(--olive), var(--porcelain) var(--hero-nav-blend, 0%)); background: color-mix(in srgb, var(--porcelain), transparent var(--hero-nav-blend, 0%)); transition: none; }
+.header-light .nav-bar { border-color: color-mix(in srgb, var(--rule), transparent var(--hero-nav-blend, 0%)); }
 .logo { display: flex; align-items: center; gap: 10px; white-space: nowrap; font: 400 36px/1 var(--serif); letter-spacing: -.04em; min-height: 52px; }
 .logo svg { width: 31px; height: 42px; }
 .desktop-nav { display: flex; gap: 36px; margin-left: auto; margin-right: 64px; }
@@ -87,18 +87,12 @@ section[id] { scroll-margin-top: 0; }
 .scroll-expand--editorial .scroll-expand__frame { clip-path: inset(0 calc((100vw - var(--editorial-width)) / 2) max(0px, calc(100svh - var(--editorial-height))) calc((100vw - var(--editorial-width)) / 2)); }
 .scroll-expand--editorial .scroll-expand__media { inset: auto; top: 0; left: 50%; width: var(--editorial-width); height: auto; max-width: none; transform: translateX(-50%); transform-origin: top center; }
 .scroll-expand--editorial .scroll-expand__scrim { background: var(--night); opacity: 0; }
-.header-editorial .nav-bar { display: grid; grid-template-columns: 1fr auto 1fr; }
-.header-editorial .logo { grid-column: 2; grid-row: 1; font-size: 40px; }
-.header-editorial .desktop-nav { grid-column: 1; grid-row: 1; margin: 0; gap: 28px; }
-.header-editorial .nav-actions { grid-column: 3; grid-row: 1; justify-self: end; }
-.header-editorial .nav-link { font: 400 18px/1.2 var(--serif); }
-.header-editorial .nav-bar { border-bottom-color: transparent; }
 
 /* Collection: live captions, square photography, no ornamental cards. */
 .collection { padding-bottom: 100px; }
 .collection-intro { text-align: center; padding: 100px 0 80px; }
 .collection-intro .eyebrow { margin-bottom: 24px; }
-.collection-intro h2 { font-size: clamp(32px, 4.1vw, 52px); line-height: 1.1; letter-spacing: -.025em; }
+.collection-intro :is(h1, h2) { font-size: clamp(32px, 4.1vw, 52px); line-height: 1.1; letter-spacing: -.025em; }
 .collection-intro > p:last-child { font-size: var(--text-sm); line-height: 1.7; margin-top: 24px; }
 .featured-product { display: block; width: 100%; padding: 0; max-width: 1200px; margin-inline: auto; }
 .featured-pair { display: grid; grid-template-columns: 1fr 1fr; position: relative; overflow: hidden; }
@@ -129,7 +123,7 @@ button.product-card { display: flex; flex-direction: column; align-items: stretc
 /* A quiet change of pace, with real ingredient destinations. */
 .rituals-section { padding-block: 80px; background: var(--porcelain); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
 .rituals-heading { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 48px; gap: 24px; }
-.rituals-heading h2 { font-size: clamp(36px, 4vw, 56px); line-height: 1.1; letter-spacing: -.02em; }
+.rituals-heading :is(h1, h2) { font-size: clamp(36px, 4vw, 56px); line-height: 1.1; letter-spacing: -.02em; }
 .ritual-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .ritual-card { padding: 32px 40px; border-left: 1px solid var(--rule); }
 .ritual-card:first-child { padding-left: 0; border-left: none; }
@@ -144,11 +138,11 @@ button.product-card { display: flex; flex-direction: column; align-items: stretc
 .story-photo > span { display: block; font-size: 11px; margin-top: 12px; }
 .story-copy { max-width: 490px; padding-right: 24px; }
 .story-copy > svg { width: 60px; height: 72px; margin-bottom: 32px; }
-.story-copy h2 { font-size: clamp(48px, 5.3vw, 80px); line-height: 1; letter-spacing: -.025em; margin: 20px 0 32px; }
+.story-copy :is(h1, h2) { font-size: clamp(48px, 5.3vw, 80px); line-height: 1; letter-spacing: -.025em; margin: 20px 0 32px; }
 .story-copy > p:not(.eyebrow) { margin-bottom: 20px; line-height: 1.75; font-size: var(--text-sm); }
 .story-copy .text-link { margin-top: 12px; }
 .faq-section { padding-block: 80px; display: grid; grid-template-columns: 1fr 1fr; gap: 8%; border-top: 1px solid var(--rule); }
-.faq-section h2 { font-size: clamp(40px, 4.2vw, 64px); line-height: 1.1; margin: 20px 0 32px; letter-spacing: -.02em; }
+.faq-section :is(h1, h2) { font-size: clamp(40px, 4.2vw, 64px); line-height: 1.1; margin: 20px 0 32px; letter-spacing: -.02em; }
 .accordion { border-top: 1px solid var(--rule); }
 .accordion-item { border-bottom: 1px solid var(--rule); }
 .accordion h2, .accordion h3 { font: inherit; }
@@ -160,7 +154,7 @@ button.product-card { display: flex; flex-direction: column; align-items: stretc
 
 /* The enquiry is an honest local preview, with a copyable result. */
 .contact-section { padding-block: 80px 100px; border-top: 1px solid var(--rule); display: grid; grid-template-columns: 1fr 1fr; gap: 8%; }
-.contact-intro h2 { font-size: clamp(40px, 4.4vw, 64px); line-height: 1.04; letter-spacing: -.02em; margin: 24px 0; }
+.contact-intro :is(h1, h2) { font-size: clamp(40px, 4.4vw, 64px); line-height: 1.04; letter-spacing: -.02em; margin: 24px 0; }
 .contact-intro > p:not(.eyebrow) { font-size: var(--text-sm); max-width: 350px; }
 .contact-intro .location-line { margin-top: 40px; font-size: var(--text-xs); }
 .enquiry-form { padding-top: 8px; }
@@ -189,6 +183,25 @@ button.product-card { display: flex; flex-direction: column; align-items: stretc
 
 /* Olive, botanical and typographic: a generous closing signature. */
 .site-footer { background: var(--olive); color: var(--porcelain); padding-top: 64px; padding-bottom: 24px; }
+.footer-cursor { position: fixed; left: 0; top: 0; z-index: 40; width: var(--footer-cursor-size); height: var(--footer-cursor-size); border-radius: 50%; background: var(--porcelain); color: var(--olive); display: grid; place-items: center; opacity: 0; pointer-events: none; transition: opacity 160ms ease; }
+.footer-cursor svg { width: 32px; height: 40px; }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .footer-cursor.is-visible { opacity: 1; will-change: transform; }
+  .has-footer-cursor, .has-footer-cursor * { cursor: none; }
+}
+
+.destination-page { padding-top: 100px; min-height: 70svh; }
+.home-destinations { padding-block: 100px; max-width: 1200px; margin-inline: auto; }
+.home-destinations h2 { font-size: clamp(40px, 4.2vw, 64px); line-height: 1.1; margin: 20px 0 48px; }
+.destination-links { border-top: 1px solid var(--rule); }
+.destination-links > a { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 24px 0; border-bottom: 1px solid var(--rule); }
+.destination-title { display: block; font: 400 32px/1.2 var(--serif); }
+.destination-description { display: block; font-size: var(--text-sm); margin-top: 8px; }
+.destination-links > a:hover .destination-title { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+@media (max-width: 640px) {
+  .destination-page { padding-top: 84px; }
+  .home-destinations { padding-block: 64px; }
+}
 .footer-top { display: grid; grid-template-columns: 1fr 1.5fr 1fr; align-items: start; gap: 48px; }
 .footer-brand { display: flex; align-items: center; gap: 20px; }
 .footer-brand svg { width: 56px; height: 76px; }
@@ -271,7 +284,7 @@ dialog[open] { animation: dialog-in .3s ease both; }
 .quick-content .text-link { margin-top: 12px; }
 
 @media (min-width: 1600px) { .collection-intro { padding-top: 120px; padding-bottom: 100px; } .product-card__caption { padding-top: 24px; } .story-copy { max-width: 600px; } .story-copy > p:not(.eyebrow) { font-size: 16px; } }
-@media (max-width: 1100px) { .desktop-nav { gap: 24px; margin-right: 32px; } .nav-actions { gap: 16px; } .logo { font-size: 32px; } .ritual-card { padding-inline: 24px; } .ritual-card h3 { font-size: 32px; } .story-copy > svg { margin-bottom: 16px; width: 48px; height: 56px; } .story-copy h2 { margin-block: 16px 24px; } .story-copy > p:not(.eyebrow) { margin-bottom: 16px; } .product-layout { gap: 5%; } .product-details { padding-top: 0; } .product-description { margin-top: 20px; } }
+@media (max-width: 1100px) { .desktop-nav { gap: 24px; margin-right: 32px; } .nav-actions { gap: 16px; } .logo { font-size: 32px; } .ritual-card { padding-inline: 24px; } .ritual-card h3 { font-size: 32px; } .story-copy > svg { margin-bottom: 16px; width: 48px; height: 56px; } .story-copy :is(h1, h2) { margin-block: 16px 24px; } .story-copy > p:not(.eyebrow) { margin-bottom: 16px; } .product-layout { gap: 5%; } .product-details { padding-top: 0; } .product-description { margin-top: 20px; } }
 @media (max-width: 880px) {
   :root { --gutter: 24px; }
   .desktop-nav { display: none; }
@@ -279,7 +292,7 @@ dialog[open] { animation: dialog-in .3s ease both; }
   .nav-bar { height: 64px; }
   html { scroll-padding-top: 112px; }
   .collection-intro { padding: 80px 0 60px; }
-  .collection-intro h2 { font-size: 48px; }
+  .collection-intro :is(h1, h2) { font-size: 48px; }
   .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px 20px; }
   .product-card__name h3 { font-size: 36px; }
   .product-card__caption .eyebrow { font-size: 12px; }
@@ -287,7 +300,7 @@ dialog[open] { animation: dialog-in .3s ease both; }
   .collection-rule { margin-top: 64px; }
   .rituals-section { padding-block: 64px; }
   .rituals-heading { display: block; }
-  .rituals-heading h2 { margin-top: 16px; }
+  .rituals-heading :is(h1, h2) { margin-top: 16px; }
   .ritual-card { padding-inline: 20px; }
   .ritual-card h3 { font-size: 28px; }
   .ritual-card p { font-size: 12px; }
@@ -296,7 +309,7 @@ dialog[open] { animation: dialog-in .3s ease both; }
   .story-section { grid-template-columns: 1fr; gap: 40px; padding-block: 64px; }
   .story-copy { max-width: 65ch; }
   .story-copy { padding-right: 0; }
-  .story-copy h2 { font-size: 48px; }
+  .story-copy :is(h1, h2) { font-size: 48px; }
   .story-copy > p:not(.eyebrow) { font-size: 12px; }
   .story-copy .text-link { font-size: 12px; gap: 8px; }
   .faq-section, .contact-section { gap: 5%; padding-block: 64px; }
@@ -333,7 +346,7 @@ dialog[open] { animation: dialog-in .3s ease both; }
   .hero-full-copy { font-size: 48px; }
   .collection-intro { padding: 40px 0; }
   .collection-intro .eyebrow { margin-bottom: 20px; font-size: 11px; }
-  .collection-intro h2 { font-size: 40px; line-height: 1.07; }
+  .collection-intro :is(h1, h2) { font-size: 40px; line-height: 1.07; }
   .collection-intro > p:last-child { margin-top: 20px; font-size: 12px; }
   .featured-label { bottom: 10px; right: 10px; padding: 4px 8px; gap: 8px; font-size: 9px; }
   .featured-label svg { width: 12px; }
@@ -354,7 +367,7 @@ dialog[open] { animation: dialog-in .3s ease both; }
   .rituals-section { padding-block: 48px; }
   .rituals-heading { margin-bottom: 24px; }
   .rituals-heading .eyebrow { font-size: 10px; }
-  .rituals-heading h2 { font-size: 36px; }
+  .rituals-heading :is(h1, h2) { font-size: 36px; }
   .ritual-grid { grid-template-columns: 1fr; }
   .ritual-card, .ritual-card:first-child, .ritual-card:last-child { padding: 28px 0; border-left: 0; border-bottom: 1px solid var(--rule); }
   .ritual-card:last-child { border-bottom: 0; padding-bottom: 0; }
@@ -367,16 +380,16 @@ dialog[open] { animation: dialog-in .3s ease both; }
   .story-copy { padding-inline: 4px; }
   .story-copy > svg { width: 48px; height: 64px; margin-bottom: 24px; }
   .story-copy .eyebrow { font-size: 10px; }
-  .story-copy h2 { font-size: 60px; }
+  .story-copy :is(h1, h2) { font-size: 60px; }
   .story-copy > p:not(.eyebrow) { font-size: 14px; line-height: 1.8; margin-bottom: 20px; }
   .story-copy .text-link { font-size: 12px; margin-top: 4px; }
   .faq-section, .contact-section { grid-template-columns: 1fr; gap: 32px; padding-block: 48px; }
-  .faq-section h2 { font-size: 48px; margin: 16px 0; }
+  .faq-section :is(h1, h2) { font-size: 48px; margin: 16px 0; }
   .faq-section .eyebrow { font-size: 10px; }
   .accordion h2 button, .accordion h3 button { font-size: 13px; padding-block: 18px; }
   .accordion-content { font-size: 13px; }
   .contact-intro .eyebrow { font-size: 10px; }
-  .contact-intro h2 { font-size: 48px; margin-block: 20px; }
+  .contact-intro :is(h1, h2) { font-size: 48px; margin-block: 20px; }
   .contact-intro > p:not(.eyebrow) { font-size: 14px; }
   .contact-intro .location-line { margin-top: 24px; font-size: 12px; }
   .form-row { grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -442,17 +455,12 @@ dialog[open] { animation: dialog-in .3s ease both; }
 
 @media (max-width: 880px) {
   .home-hero { padding-top: 92px; }
-  .header-editorial .logo { font-size: 32px; }
-  .header-editorial .nav-bar { grid-template-columns: 1fr auto; }
-  .header-editorial .logo { grid-column: 1; justify-self: start; }
-  .header-editorial .nav-actions { grid-column: 2; }
 }
 @media (max-width: 640px) {
   .home-hero { padding-top: 84px; }
   .hero-intro { padding-block: 64px 48px; }
   .hero-intro h1 { font-size: 28px; max-width: 400px; line-height: 1.12; }
   .hero-intro-links { gap: 24px; margin-top: 20px; }
-  .header-editorial .logo { font-size: 28px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .scroll-expand--editorial { height: auto; }

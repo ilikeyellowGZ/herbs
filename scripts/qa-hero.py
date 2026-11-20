@@ -16,7 +16,11 @@ with sync_playwright() as p:
         page.set_viewport_size({'width': width, 'height': height})
         page.goto('http://localhost:4173', wait_until='networkidle')
         expect(page.locator('h1')).to_contain_text('A little closer to nature.')
-        expect(page.locator('.site-header')).to_have_class('site-header header-light header-editorial')
+        expect(page.locator('.site-header')).to_have_class('site-header header-light')
+        navigation = page.locator('.site-header')
+        assert navigation.evaluate('(e)=>parseFloat(e.style.getPropertyValue("--hero-nav-blend"))') == 0
+        assert page.locator('.nav-bar').evaluate('(e)=>getComputedStyle(e).display') == 'flex'
+        assert page.locator('.logo').bounding_box()['x'] < 30
         media = page.locator('.hero-expand img')
         assert 'garden-aerial-' in media.evaluate('(e)=>e.currentSrc')
         assert media.evaluate('(e)=>e.complete && e.naturalWidth > 0')
@@ -29,17 +33,26 @@ with sync_playwright() as p:
         initial_clip = frame.evaluate('(e)=>getComputedStyle(e).clipPath')
         page.screenshot(path=str(OUT / f'initial-{width}.png'))
         top = page.locator('.hero-expand').evaluate('(e)=>e.getBoundingClientRect().top+scrollY')
-        for progress in [.5, 1]:
+        for progress in [.5, .8, 1]:
             page.evaluate('(y)=>window.scrollTo({top:y,behavior:"instant"})', top + height * .65 * progress)
             page.wait_for_timeout(1000)
             assert frame.evaluate('(e)=>getComputedStyle(e).clipPath') != initial_clip
             assert media.bounding_box()['width'] > initial['width']
+            blend = navigation.evaluate('(e)=>parseFloat(e.style.getPropertyValue("--hero-nav-blend"))')
+            if progress == .8:
+                assert 0 < blend < 100, blend
+            if progress == 1:
+                assert blend > 99, blend
             page.screenshot(path=str(OUT / f'scroll-{progress}-{width}.png'))
         expect(page.locator('.hero-full-copy')).to_be_visible()
         assert float(page.locator('.hero-expand .scroll-expand__overlay').evaluate('(e)=>getComputedStyle(e).opacity')) > .99
+        page.locator('#collection').evaluate('(e)=>window.scrollTo({top:e.getBoundingClientRect().top+scrollY,behavior:"instant"})')
+        page.wait_for_timeout(250)
+        assert navigation.evaluate('(e)=>parseFloat(e.style.getPropertyValue("--hero-nav-blend"))') == 0
         page.evaluate('window.scrollTo({top:0,behavior:"instant"})')
         page.wait_for_timeout(1000)
         assert abs(media.bounding_box()['width'] - initial['width']) < 2
+        assert navigation.evaluate('(e)=>parseFloat(e.style.getPropertyValue("--hero-nav-blend"))') == 0
         expect(page.locator('h1')).to_be_in_viewport()
         page.get_by_role('button', name='Explore hibiscus').focus()
         expect(page.get_by_role('button', name='Explore hibiscus')).to_be_focused()
@@ -48,10 +61,13 @@ with sync_playwright() as p:
         assert page.locator('.hero-expand').evaluate('(e)=>Math.abs(e.clientHeight-e.clientWidth*941/1672)<2')
         assert frame.evaluate('(e)=>getComputedStyle(e).clipPath') == 'none'
         assert media.bounding_box()['width'] == width
+        assert navigation.evaluate('(e)=>parseFloat(e.style.getPropertyValue("--hero-nav-blend"))') == 0
         expect(page.get_by_role('button', name='Explore hibiscus')).to_be_visible()
         page.screenshot(path=str(OUT / f'reduced-{width}.png'))
         page.emulate_media(reduced_motion='no-preference')
-        report.append({'width': width, 'initial_photo': 'native aspect ratio', 'expansion': 'passed', 'reverse_scroll': 'passed', 'reduced_motion': 'passed', 'overflow': False})
+        report.append({'width': width, 'initial_photo': 'native aspect ratio', 'original_nav_layout': 'passed', 'nav_fade_and_restore': 'passed', 'expansion': 'passed', 'reverse_scroll': 'passed', 'reduced_motion': 'passed', 'overflow': False})
+    page.goto('http://localhost:4173/products/hibiscus', wait_until='networkidle')
+    assert page.locator('.site-header').evaluate('(e)=>e.style.getPropertyValue("--hero-nav-blend")') == ''
     assert not errors, errors
     (OUT / 'report.json').write_text(json.dumps(report, indent=2))
     print(json.dumps(report, indent=2))

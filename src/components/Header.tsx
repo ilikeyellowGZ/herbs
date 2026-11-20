@@ -1,14 +1,15 @@
 import { useRef, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Menu, Search, X, ArrowUpRight } from 'lucide-react';
 import Logo, { BotanicalMark } from './Logo';
 import { products } from '../data/catalogue.mjs';
 import useDialogFocus from './useDialogFocus';
+import { pages } from '../data/pages.mjs';
+import SayHello from './SayHello';
 
-const links = [{ label: 'Collection', href: '/#collection' }, { label: 'Rituals', href: '/#rituals' }, { label: 'Our story', href: '/#story' }];
+const links = pages.slice(0, 4).map(page => ({ label: page.label, href: page.path }));
 
 export default function Header() {
-  const location = useLocation();
   const [query, setQuery] = useState('');
   const menu = useRef<HTMLDialogElement>(null);
   const search = useRef<HTMLDialogElement>(null);
@@ -20,15 +21,15 @@ export default function Header() {
 
   return <>
     <a className="skip-link" href="#main">Skip to content</a>
-    <header className={`site-header header-light ${location.pathname === '/' ? 'header-editorial' : ''}`}>
+    <header className="site-header header-light">
       <div className="announcement">Small rituals. A little closer to nature. <span>Gauteng, South Africa</span></div>
       <div className="nav-bar"><Logo /><nav className="desktop-nav" aria-label="Main navigation">{links.map(link => <Link className="nav-link" key={link.href} to={link.href}>{link.label}</Link>)}</nav>
-        <div className="nav-actions"><Link className="hello-link" to="/#contact">Say hello <ArrowUpRight size={16} strokeWidth={1.3} /></Link><button className="icon-button" onClick={() => search.current?.showModal()} aria-label="Search the collection"><Search size={20} strokeWidth={1.3} /></button><button className="icon-button menu-trigger" onClick={() => menu.current?.showModal()} aria-label="Open menu"><Menu size={24} strokeWidth={1.3} /></button></div>
+        <div className="nav-actions"><SayHello className="hello-link">Say hello <ArrowUpRight size={16} strokeWidth={1.3} /></SayHello><button className="icon-button" onClick={() => search.current?.showModal()} aria-label="Search the collection"><Search size={20} strokeWidth={1.3} /></button><button className="icon-button menu-trigger" onClick={() => menu.current?.showModal()} aria-label="Open menu"><Menu size={24} strokeWidth={1.3} /></button></div>
       </div>
     </header>
     <dialog className="navigation-dialog" ref={menu} aria-labelledby="menu-title">
       <div className="dialog-top"><span id="menu-title">Herby Health</span><button className="icon-button" onClick={close} aria-label="Close menu"><X strokeWidth={1.3} /></button></div>
-      <nav aria-label="Mobile navigation">{[...links, { label: 'Say hello', href: '/#contact' }].map(link => <Link key={link.href} to={link.href} onClick={close}>{link.label}<ArrowUpRight size={26} strokeWidth={1} /></Link>)}</nav>
+      <nav aria-label="Mobile navigation">{[...links, { label: 'A few answers', href: '/faqs' }].map(link => <Link key={link.href} to={link.href} onClick={close}>{link.label}<ArrowUpRight size={26} strokeWidth={1} /></Link>)}<SayHello onClick={close}>Say hello<ArrowUpRight size={26} strokeWidth={1} /></SayHello></nav>
       <div className="menu-bottom"><BotanicalMark /><p>A little closer<br />to nature.</p><span>Gauteng, South Africa</span></div>
     </dialog>
     <dialog ref={search} className="search-dialog" aria-labelledby="search-title">

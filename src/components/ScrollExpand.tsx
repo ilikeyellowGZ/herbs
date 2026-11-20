@@ -6,9 +6,9 @@ import { useReducedMotion } from 'framer-motion';
 const clamp = (v: number, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const smoothstep = (a: number, b: number, x: number) => { const t = clamp((x - a) / (b - a)); return t * t * (3 - 2 * t); };
 
-type Props = { src: string; srcSet?: string; sizes?: string; alt?: string; width?: number; height?: number; variant?: 'default' | 'editorial'; title: ReactNode; children?: ReactNode; scrollHint?: string; startWidth?: number; startHeight?: number; startRadius?: number; endRadius?: number; mediaZoom?: number; scrollDistance?: number; holdDistance?: number; smoothing?: number; overlayScrim?: number; className?: string; priority?: boolean };
+type Props = { src: string; srcSet?: string; sizes?: string; alt?: string; width?: number; height?: number; variant?: 'default' | 'editorial'; syncNavigation?: boolean; title: ReactNode; children?: ReactNode; scrollHint?: string; startWidth?: number; startHeight?: number; startRadius?: number; endRadius?: number; mediaZoom?: number; scrollDistance?: number; holdDistance?: number; smoothing?: number; overlayScrim?: number; className?: string; priority?: boolean };
 
-export default function ScrollExpand({ src, srcSet, sizes = '100vw', alt = '', width = 1672, height = 941, variant = 'default', title, children, scrollHint = 'Scroll to discover', startWidth = 92, startHeight = 76, startRadius = 8, endRadius = 0, mediaZoom = 1.12, scrollDistance = .65, holdDistance = .05, smoothing = .1, overlayScrim = .35, className = '', priority = false }: Props) {
+export default function ScrollExpand({ src, srcSet, sizes = '100vw', alt = '', width = 1672, height = 941, variant = 'default', syncNavigation = false, title, children, scrollHint = 'Scroll to discover', startWidth = 92, startHeight = 76, startRadius = 8, endRadius = 0, mediaZoom = 1.12, scrollDistance = .65, holdDistance = .05, smoothing = .1, overlayScrim = .35, className = '', priority = false }: Props) {
   const rootRef = useRef<HTMLElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
   const mediaRef = useRef<HTMLImageElement>(null);
@@ -26,6 +26,9 @@ export default function ScrollExpand({ src, srcSet, sizes = '100vw', alt = '', w
     let target = 0;
     let lastTime = 0;
     const editorial = variant === 'editorial';
+    const navigation = syncNavigation ? document.querySelector<HTMLElement>('.site-header') : null;
+    let navigationHeight = 100;
+    let navigationCoverage = 0;
     let initialWidth = 0;
     let initialHeight = 0;
     let fullWidth = 0;
@@ -35,6 +38,7 @@ export default function ScrollExpand({ src, srcSet, sizes = '100vw', alt = '', w
     const measure = () => {
       viewportWidth = root.clientWidth;
       viewportHeight = window.innerHeight;
+      navigationHeight = navigation?.offsetHeight || 100;
       if (!editorial) return;
       const gutter = parseFloat(getComputedStyle(root).getPropertyValue('--gutter')) || 24;
       initialWidth = Math.min(1200, viewportWidth - gutter * 2);
@@ -48,6 +52,9 @@ export default function ScrollExpand({ src, srcSet, sizes = '100vw', alt = '', w
     };
     const apply = (p: number) => {
       const e = smoothstep(0, 1, p);
+      // Share the photo's smoothed progress with its overlaid navigation.
+      // The exit coverage returns a solid surface before light page content arrives.
+      if (navigation) navigation.style.setProperty('--hero-nav-blend', `${reduced ? 0 : smoothstep(.65, .95, p) * navigationCoverage * 100}%`);
       const ix = Math.max(0, (100 - (startWidth + (100 - startWidth) * e)) / 2);
       const iy = Math.max(0, (100 - (startHeight + (100 - startHeight) * e)) / 2);
       if (editorial) {
@@ -77,7 +84,9 @@ export default function ScrollExpand({ src, srcSet, sizes = '100vw', alt = '', w
       raf = current !== target ? requestAnimationFrame(tick) : 0;
     };
     const update = () => {
-      target = reduced ? 1 : clamp(-root.getBoundingClientRect().top / (window.innerHeight * Math.max(.01, scrollDistance)));
+      const bounds = root.getBoundingClientRect();
+      target = reduced ? 1 : clamp(-bounds.top / (window.innerHeight * Math.max(.01, scrollDistance)));
+      navigationCoverage = smoothstep(navigationHeight, navigationHeight * 2, bounds.bottom);
       if (!raf) raf = requestAnimationFrame(tick);
     };
     const resize = () => { measure(); lastTime = 0; update(); };
@@ -85,8 +94,8 @@ export default function ScrollExpand({ src, srcSet, sizes = '100vw', alt = '', w
     update();
     window.addEventListener('scroll', update, { passive: true });
     window.addEventListener('resize', resize);
-    return () => { cancelAnimationFrame(raf); window.removeEventListener('scroll', update); window.removeEventListener('resize', resize); };
-  }, [startWidth, startHeight, startRadius, endRadius, mediaZoom, scrollDistance, smoothing, overlayScrim, reduced, variant, width, height]);
+    return () => { cancelAnimationFrame(raf); window.removeEventListener('scroll', update); window.removeEventListener('resize', resize); navigation?.style.removeProperty('--hero-nav-blend'); };
+  }, [startWidth, startHeight, startRadius, endRadius, mediaZoom, scrollDistance, smoothing, overlayScrim, reduced, variant, width, height, syncNavigation]);
 
   return <section ref={rootRef} className={`scroll-expand ${className} ${variant === 'editorial' ? 'scroll-expand--editorial' : ''} ${reduced ? 'is-reduced' : ''}`} style={{ '--scroll-track': `${1 + scrollDistance + holdDistance}`, '--media-ratio': `${width} / ${height}` } as React.CSSProperties}>
     <div className="scroll-expand__stage">

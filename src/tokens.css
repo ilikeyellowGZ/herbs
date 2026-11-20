@@ -14,4 +14,6 @@
   --text-base: 16px;
   --text-lg: 18px;
   --gutter: 24px;
+  --footer-cursor-lag: 200ms;
+  --footer-cursor-size: 64px;
 }

@@ -12,7 +12,7 @@ export function EnquiryProvider({ children }: { children: ReactNode }) {
   const enquire = useCallback((slug: string) => {
     setDraft(previous => ({ ...previous, ingredient: slug }));
     setFocusRequest(count => count + 1);
-    navigate('/#contact');
+    navigate('/contact');
   }, [navigate]);
   const value = useMemo(() => ({ draft, setDraft, enquire, focusRequest }), [draft, enquire, focusRequest]);
   return <EnquiryContext.Provider value={value}>{children}</EnquiryContext.Provider>;

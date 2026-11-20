@@ -13,14 +13,14 @@ export default function ProductPage() {
   const product = findProduct(slug);
   const [selected, setSelected] = useState(0);
   const { enquire } = useEnquiry();
-  if (!product) return <section className="not-found section-gutters"><p className="eyebrow">A little off the garden path</p><h1>Let’s find your way back.</h1><Link className="solid-button" to="/#collection">Explore the collection</Link></section>;
+  if (!product) return <section className="not-found section-gutters"><p className="eyebrow">A little off the garden path</p><h1>Let’s find your way back.</h1><Link className="solid-button" to="/collection">Explore the collection</Link></section>;
   const images = [{ type: 'bottle', key: product.bottle, label: 'Product concept' }, { type: 'photo', key: product.slug, label: 'The ingredient' }, ...(slug === 'hibiscus' ? [{ type: 'photo', key: 'hibiscus-in-use', label: 'Your everyday ritual' }] : [])];
   const active = images[selected] || images[0];
   const related = products.filter(p => p.slug !== slug).slice(0, 4);
 
   return <>
     <section className="product-page section-gutters">
-      <div className="breadcrumbs"><Link to="/#collection"><ArrowLeft size={14} />The collection</Link><span>/</span><span>{product.name}</span></div>
+      <div className="breadcrumbs"><Link to="/collection"><ArrowLeft size={14} />The collection</Link><span>/</span><span>{product.name}</span></div>
       <div className="product-layout">
         <div className="product-gallery"><div className={`gallery-main ${active.type === 'bottle' ? 'bottle-image' : ''}`} key={active.key}>
           {active.type === 'bottle' ? <BottleImage product={product} /> : <ResponsiveImage name={active.key} priority sizes="(max-width: 880px) 100vw, 55vw" />}
@@ -30,11 +30,11 @@ export default function ProductPage() {
           { title: 'The ingredient', content: product.detail },
           { title: 'Your everyday ritual', content: product.ritual },
           { title: 'Availability & product details', content: 'Please enquire for current pricing, available formats, contents and delivery arrangements. The bottle and carton images show concept packaging; final packaging will be confirmed with your enquiry.' },
-        ]} /><Link className="text-link product-help" to="/#contact">A question before you begin?</Link></div>
+        ]} /><Link className="text-link product-help" to="/contact">A question before you begin?</Link></div>
       </div>
     </section>
     <section className="product-ritual section-gutters"><div><p className="eyebrow">Make a little room</p><h2>{product.moment}<em>.</em></h2></div><div><p>{product.ritual}</p><p className="eyebrow">At your pace. In your own way.</p></div></section>
-    <section className="related-section section-gutters"><div className="related-heading"><div><p className="eyebrow">A few more good things</p><h2>Naturally <em>curious?</em></h2></div><Link className="text-link" to="/#collection">The whole collection <ArrowUpRight size={17} /></Link></div><div className="product-grid">{related.map(p => <ProductCard key={p.slug} product={p} />)}</div></section>
+    <section className="related-section section-gutters"><div className="related-heading"><div><p className="eyebrow">A few more good things</p><h2>Naturally <em>curious?</em></h2></div><Link className="text-link" to="/collection">The whole collection <ArrowUpRight size={17} /></Link></div><div className="product-grid">{related.map(p => <ProductCard key={p.slug} product={p} />)}</div></section>
   </>;
 }
 

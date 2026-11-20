@@ -35,7 +35,7 @@ export default function Contact() {
   };
 
   return <section id="contact" className="contact-section section-gutters" ref={sectionRef}>
-    <div className="contact-intro"><p className="eyebrow">A conversation starts here</p><h2>Good things begin<br />with a <em>hello.</em></h2><p>Curious about an ingredient? Putting together a new routine? We’d love to hear what’s on your mind.</p><p className="location-line">Gauteng, South Africa</p></div>
+    <div className="contact-intro"><p className="eyebrow">A conversation starts here</p><h1>Good things begin<br />with a <em>hello.</em></h1><p>Curious about an ingredient? Putting together a new routine? We’d love to hear what’s on your mind.</p><p className="location-line">Gauteng, South Africa</p></div>
     <form onSubmit={submit} className="enquiry-form">
       <div className="form-row"><label>Your name<input ref={nameRef} name="name" autoComplete="name" value={draft.name} onChange={event => update('name', event.target.value)} required placeholder="Name and surname" maxLength={120} /></label><label>Email address<input type="email" name="email" autoComplete="email" value={draft.email} onChange={event => update('email', event.target.value)} required placeholder="you@example.com" maxLength={254} /></label></div>
       <label>What caught your eye? <span className="optional">(optional)</span><select name="ingredient" value={draft.ingredient} onChange={event => update('ingredient', event.target.value)}><option value="">Choose an ingredient</option>{products.map(product => <option key={product.slug} value={product.slug}>{product.name}</option>)}</select></label>
