@@ -62,7 +62,7 @@
 .admin-search { display: flex; align-items: center; padding: 0 12px; gap: 8px; border: 1px solid var(--rule); max-width: 360px; min-width: 180px; flex: 1; }
 .admin-search input { min-height: 44px; border: 0; background: transparent; width: 100%; min-width: 0; color: var(--olive); font-size: 14px; outline-offset: 0; }
 .admin-count { margin-right: auto; font-size: 12px; white-space: nowrap; }
-.admin-table-scroll { overflow-x: auto; }
+.admin-table-scroll { position: relative; overflow-x: auto; }
 .admin-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
 .admin-table th { font-weight: 500; background: var(--garden); font-size: 12px; white-space: nowrap; }
 .admin-table th, .admin-table td { padding: 16px 20px; border-bottom: 1px solid var(--rule); vertical-align: middle; }
@@ -70,7 +70,8 @@
 .admin-table tbody tr:hover { background: var(--garden); }
 .admin-table td strong { display: block; font-weight: 500; }
 .admin-table td small { display: block; font-size: 12px; margin-top: 4px; }
-.admin-table td { overflow-wrap: anywhere; }
+.admin-table td { white-space: nowrap; }
+.admin-product-cell small { white-space: normal; }
 .admin-table tr.admin-selected { background: var(--garden); }
 .admin-status { display: inline-flex; padding: 4px 8px; border: 1px solid var(--rule); font-size: 12px; line-height: 1.4; white-space: nowrap; }
 .admin-status--active, .admin-status--paid, .admin-status--fulfilled, .admin-status--resolved { background: var(--olive); color: var(--porcelain); border-color: var(--olive); }

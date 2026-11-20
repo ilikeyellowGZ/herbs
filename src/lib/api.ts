@@ -9,7 +9,7 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
   if (!contentType.includes('application/json')) throw new Error('The store service is unavailable. Please try again shortly.');
   const data = await response.json();
   if (!response.ok) {
-    if (response.status === 401 && path.startsWith('/admin')) window.dispatchEvent(new Event('owner-session-expired'));
+    if (response.status === 401 && (path.startsWith('/admin') || path === '/auth/logout')) window.dispatchEvent(new Event('owner-session-expired'));
     throw new Error(data.error || 'The request could not be completed.');
   }
   return data as T;

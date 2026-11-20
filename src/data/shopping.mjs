@@ -5,7 +5,8 @@ export const MAX_QUANTITY = 99;
 export const FREE_DELIVERY = 65000;
 export const COURIER_FEE = 7500;
 export const provinces = ['Eastern Cape', 'Free State', 'Gauteng', 'KwaZulu-Natal', 'Limpopo', 'Mpumalanga', 'North West', 'Northern Cape', 'Western Cape'];
-export const money = cents => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(cents / 100);
+const currencyFormat = new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' });
+export const money = cents => currencyFormat.format(cents / 100);
 
 export function normaliseCart(value) {
   /** @type {{slug: string, quantity: number}[]} */
