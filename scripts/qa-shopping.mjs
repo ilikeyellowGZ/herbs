@@ -60,6 +60,7 @@ try {
     await page.getByLabel('A note for us', { exact: false }).fill('Please confirm the product labels.');
     await overflow(page);
     await accessibility(page, `checkout ${width}`);
+    await page.evaluate(() => { document.activeElement?.blur(); window.scrollTo(0, 0); });
     await page.screenshot({ path: `artifacts/shopping/checkout-${width}.png`, fullPage: true });
     await page.getByRole('button', { name: 'Review order', exact: true }).click();
     await page.getByRole('heading', { name: 'Your order, considered.' }).waitFor();
@@ -68,10 +69,11 @@ try {
     await page.getByText('Order request copied. No order or payment has been submitted.', { exact: true }).waitFor();
     assert.match(await page.evaluate(() => navigator.clipboard.readText()), /Hibiscus.*100 g.*3/);
     await accessibility(page, `review ${width}`);
+    await page.evaluate(() => { document.activeElement?.blur(); window.scrollTo(0, 0); });
     await page.screenshot({ path: `artifacts/shopping/review-${width}.png`, fullPage: true });
     await page.getByRole('button', { name: 'Edit contact & delivery details', exact: true }).click();
     await page.getByRole('radio', { name: /Collect in Gauteng/ }).check();
-    assert.match(await page.locator('.shopping-total dd').textContent(), /285[.,]00/);
+    assert.match(await page.locator('.checkout-summary .shopping-total dd').textContent(), /285[.,]00/);
     assert.equal(await page.getByLabel('Street address & unit', { exact: true }).count(), 0);
     await page.getByRole('button', { name: 'Review order', exact: true }).click();
     await page.getByRole('heading', { name: 'Your order, considered.' }).waitFor();

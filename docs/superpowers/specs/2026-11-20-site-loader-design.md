@@ -1,0 +1,9 @@
+# Branded site loading animation
+
+Approved by the user on 20 November 2026: a full-screen Garden sage intro with the original Olive botanical emblem blooming, the Instrument Serif Herby Health wordmark fading upward in two short stages, a quiet “A little nature, on its way” line, and three pulsing dots. Fade the overlay away when the initial route and its eager imagery/fonts are ready. Allow approximately 1.6 seconds for the short brand entrance, with a five-second readiness safety limit and a 280ms exit.
+
+Reuse BotanicalMark and its existing artwork, but use CSS transforms/opacity for loader-specific motion so progress remains smooth under JavaScript load. Keep the wordmark readable on small screens; use a 96px emblem, 48px desktop/40px phone wordmark, 14px helper, 6px dots, and existing 8/12/24/32px spacing. No new dependencies or images.
+
+Display the intro once per document load, including direct destination visits; never replay it for ordinary internal navigation. Reuse the same branded presentation in the route Suspense fallback without blocking route completion. Lock scrolling and temporarily make the content inert while the initial overlay is present; restore both on dismissal or unmount. Preserve no-JavaScript access to prerendered content. Respect reduced motion, including live preference changes: static emblem/text, opacity-only dots, short readiness-based dismissal without the minimum brand hold. Clean up timers, event listeners, and asynchronous readiness handlers. Do not announce individual animated letters or dots.
+
+Verify the production build, existing unit tests, and real-browser initial loading/dismissal, responsive widths 375/768/1280, keyboard access after dismissal, internal navigation, slow imagery, direct routes, reduced motion and no-JavaScript rendering. Save loader screenshots.

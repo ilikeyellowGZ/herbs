@@ -35,10 +35,19 @@ export default function Checkout() {
     try { await navigator.clipboard.writeText(request); setCopyStatus('Order request copied. No order or payment has been submitted.'); }
     catch { setShowRequest(true); setCopyStatus('Select and copy the order request below.'); }
   }
+  function updateField(key: keyof Details, value: string) {
+    setDetails(previous => ({ ...previous, [key]: value }));
+    setErrors(previous => {
+      if (!previous[key]) return previous;
+      const next = { ...previous };
+      delete next[key];
+      return next;
+    });
+  }
   function field(key: keyof Details, label: string, autocomplete: string, type = 'text', maxLength = 100, required = true) {
     return <div className={`checkout-field ${key === 'address' || key === 'name' ? 'checkout-field--wide' : ''}`}>
       <label htmlFor={`checkout-${key}`}>{label}{!required && <span> (optional)</span>}</label>
-      <input id={`checkout-${key}`} name={key} type={type} autoComplete={autocomplete} maxLength={maxLength} required={required} value={details[key]} aria-invalid={errors[key] ? true : undefined} aria-describedby={errors[key] ? `error-${key}` : undefined} onChange={event => setDetails(previous => ({ ...previous, [key]: event.target.value }))} />
+      <input id={`checkout-${key}`} name={key} type={type} autoComplete={autocomplete} maxLength={maxLength} required={required} value={details[key]} aria-invalid={errors[key] ? true : undefined} aria-describedby={errors[key] ? `error-${key}` : undefined} onChange={event => updateField(key, event.target.value)} />
       {errors[key] && <p className="field-error" id={`error-${key}`}>{errors[key]}</p>}
     </div>;
   }
@@ -59,8 +68,8 @@ export default function Checkout() {
         <fieldset className="delivery-fieldset"><legend>How shall it find you?</legend><div className="delivery-options">
           <label className={`delivery-option ${method === 'courier' ? 'selected' : ''}`}><input type="radio" name="delivery" value="courier" checked={method === 'courier'} onChange={() => { setMethod('courier'); setErrors({}); }} /><Truck size={22} strokeWidth={1.2} /><span><strong>Courier delivery</strong><small>South Africa · R75, free from R650</small></span></label>
           <label className={`delivery-option ${method === 'collection' ? 'selected' : ''}`}><input type="radio" name="delivery" value="collection" checked={method === 'collection'} onChange={() => { setMethod('collection'); setErrors({}); }} /><MapPin size={22} strokeWidth={1.2} /><span><strong>Collect in Gauteng</strong><small>Free · location & time by arrangement</small></span></label>
-        </div>{method === 'courier' ? <div className="checkout-fields">{field('address', 'Street address & unit', 'street-address', 'text', 200)}{field('city', 'Town / city', 'address-level2')}<div className="checkout-field"><label htmlFor="checkout-province">Province</label><select id="checkout-province" name="province" autoComplete="address-level1" required value={details.province} aria-invalid={errors.province ? true : undefined} aria-describedby={errors.province ? 'error-province' : undefined} onChange={event => setDetails(previous => ({ ...previous, province: event.target.value }))}><option value="">Select a province</option>{provinces.map(province => <option key={province}>{province}</option>)}</select>{errors.province && <p id="error-province" className="field-error">{errors.province}</p>}</div>{field('postalCode', 'Postal code', 'postal-code', 'text', 4)}<p className="checkout-country">Delivering within South Africa.</p></div> : <p className="collection-note">We’ll need to confirm a collection location and a time that suits you before an order can be accepted.</p>}</fieldset>
-        <div className="checkout-field"><label htmlFor="checkout-notes">A note for us <span>(optional)</span></label><textarea id="checkout-notes" name="notes" rows={3} maxLength={500} value={details.notes} placeholder="Anything you’d like us to know?" onChange={event => setDetails(previous => ({ ...previous, notes: event.target.value }))} /></div>
+        </div>{method === 'courier' ? <div className="checkout-fields">{field('address', 'Street address & unit', 'street-address', 'text', 200)}{field('city', 'Town / city', 'address-level2')}<div className="checkout-field"><label htmlFor="checkout-province">Province</label><select id="checkout-province" name="province" autoComplete="address-level1" required value={details.province} aria-invalid={errors.province ? true : undefined} aria-describedby={errors.province ? 'error-province' : undefined} onChange={event => updateField('province', event.target.value)}><option value="">Select a province</option>{provinces.map(province => <option key={province}>{province}</option>)}</select>{errors.province && <p id="error-province" className="field-error">{errors.province}</p>}</div>{field('postalCode', 'Postal code', 'postal-code', 'text', 4)}<p className="checkout-country">Delivering within South Africa.</p></div> : <p className="collection-note">We’ll need to confirm a collection location and a time that suits you before an order can be accepted.</p>}</fieldset>
+        <div className="checkout-field"><label htmlFor="checkout-notes">A note for us <span>(optional)</span></label><textarea id="checkout-notes" name="notes" rows={3} maxLength={500} value={details.notes} placeholder="Anything you’d like us to know?" onChange={event => updateField('notes', event.target.value)} /></div>
         {Object.keys(errors).length > 0 && <p className="field-error checkout-error" role="alert">Please check the highlighted details before continuing.</p>}
         <button type="submit" className="solid-button checkout-continue">Review order<ArrowRight size={18} strokeWidth={1.3} /></button><p className="shopping-preview">Your contact details stay on this page. They are not saved or sent.</p>
       </form>}

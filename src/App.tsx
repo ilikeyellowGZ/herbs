@@ -17,6 +17,7 @@ const Rituals = lazy(() => import('./pages/Rituals'));
 const Story = lazy(() => import('./pages/Story'));
 const Contact = lazy(() => import('./pages/Contact'));
 const Faqs = lazy(() => import('./pages/Faqs'));
+const GetHelp = lazy(() => import('./pages/GetHelp'));
 const Terms = lazy(() => import('./pages/Terms'));
 const Privacy = lazy(() => import('./pages/Privacy'));
 const Checkout = lazy(() => import('./pages/Checkout'));
@@ -53,7 +54,7 @@ export default function App() {
   return <EnquiryProvider><CartProvider><NavigationEffects /><Header /><CartDrawer /><main id="main" tabIndex={-1}>
     <LazyMotion features={domAnimation}><AnimatePresence mode="wait" initial={false}><m.div key={location.pathname} initial={{ opacity: reduced ? 1 : 0, y: reduced ? 0 : 12 }} animate={{ opacity: 1, y: 0, transitionEnd: { transform: 'none' } }} exit={{ opacity: reduced ? 1 : 0, y: reduced ? 0 : -8 }} transition={{ duration: reduced ? 0 : .28, ease: [.2, .65, .3, 1] }}>
       <Suspense fallback={<div className="page-loading" role="status">A little nature, on its way…</div>}>
-      <Routes location={location}><Route path="/" element={<Home />} /><Route path="/collection" element={<Collection />} /><Route path="/rituals" element={<Rituals />} /><Route path="/our-story" element={<Story />} /><Route path="/contact" element={<Contact />} /><Route path="/faqs" element={<Faqs />} /><Route path="/terms-and-conditions" element={<Terms />} /><Route path="/privacy-policy" element={<Privacy />} /><Route path="/checkout" element={<Checkout />} /><Route path="/products/:slug" element={<Product key={location.pathname} />} /><Route path="*" element={<section className="not-found section-gutters"><p className="eyebrow">A little off the garden path</p><h1>This page is still growing.</h1><Link className="solid-button" to="/">Back to Herby Health</Link></section>} /></Routes>
+      <Routes location={location}><Route path="/" element={<Home />} /><Route path="/collection" element={<Collection />} /><Route path="/rituals" element={<Rituals />} /><Route path="/our-story" element={<Story />} /><Route path="/contact" element={<Contact />} /><Route path="/faqs" element={<Faqs />} /><Route path="/get-help" element={<GetHelp />} /><Route path="/terms-and-conditions" element={<Terms />} /><Route path="/privacy-policy" element={<Privacy />} /><Route path="/checkout" element={<Checkout />} /><Route path="/products/:slug" element={<Product key={location.pathname} />} /><Route path="*" element={<section className="not-found section-gutters"><p className="eyebrow">A little off the garden path</p><h1>This page is still growing.</h1><Link className="solid-button" to="/">Back to Herby Health</Link></section>} /></Routes>
       </Suspense>
     </m.div></AnimatePresence></LazyMotion>
   </main><Footer /></CartProvider></EnquiryProvider>;

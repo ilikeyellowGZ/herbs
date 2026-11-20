@@ -32,6 +32,9 @@ test('totals count units, price from catalogue and apply delivery thresholds in 
   assert.equal(small.total, 30000);
   assert.equal(cartSummary([{ slug: 'hibiscus', quantity: 2 }], 'collection').shipping, 0);
   assert.equal(cartSummary([{ slug: 'collagen', quantity: 2 }, { slug: 'chia-seeds', quantity: 1 }]).shipping, 0);
+  assert.equal(cartSummary([{ slug: 'collagen', quantity: 2 }, { slug: 'cinnamon', quantity: 1 }]).shipping, 7500);
+  assert.equal(cartSummary([{ slug: 'sea-moss', quantity: 3 }, { slug: 'chia-seeds', quantity: 1 }, { slug: 'bay-leaves', quantity: 1 }]).subtotal, 65000);
+  assert.equal(cartSummary([{ slug: 'sea-moss', quantity: 3 }, { slug: 'chia-seeds', quantity: 1 }, { slug: 'bay-leaves', quantity: 1 }]).shipping, 0);
   assert.equal(cartSummary([]).total, 0);
   assert.equal(cartSummary([{ slug: 'ashwagandha', quantity: 99 }]).subtotal, Math.round(products.find(p => p.slug === 'ashwagandha').price * 100) * 99);
 });

@@ -24,7 +24,7 @@ try {
     await page.waitForURL('**/contact#contact');
     await page.getByRole('button', { name: 'Choose files', exact: true }).focus();
     const picker = page.waitForEvent('filechooser');
-    await page.keyboard.press('Enter');
+    await page.getByRole('button', { name: 'Choose files', exact: true }).press('Enter');
     await (await picker).setFiles([
       { name: 'garden.png', mimeType: 'image/png', buffer: png },
       { name: 'brief.pdf', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-1.4\npreview') },

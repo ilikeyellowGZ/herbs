@@ -7,7 +7,7 @@ import useDialogFocus from './useDialogFocus';
 import { pages } from '../data/pages.mjs';
 import SayHello from './SayHello';
 
-const links = pages.slice(0, 3).map(page => ({ label: page.label, href: page.path }));
+const links = [...pages.slice(0, 3).map(page => ({ label: page.label, href: page.path })), { label: 'Get help', href: '/get-help' }];
 
 export default function Header() {
   const { count, open, setOpen } = useCart();

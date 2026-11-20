@@ -16,8 +16,8 @@ try {
     await page.getByRole('searchbox', { name: 'Search ingredients' }).waitFor();
     assert.equal(await page.locator('main h1').count(), 1);
     assert.equal(await page.locator('.catalogue-card').count(), 8);
-    assert.equal(await page.locator('.catalogue-card').getByText('Price on enquiry', { exact: true }).count(), 8);
-    assert.equal(await page.locator('#collection-sort option[value="price-asc"]').isDisabled(), true);
+    assert.equal(await page.locator('.catalogue-card .catalogue-price').count(), 8);
+    assert.equal(await page.locator('#collection-sort option[value="price-asc"]').isDisabled(), false);
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `Overflow at ${width}`);
     for (const photo of await page.locator('.catalogue-card__photo').all()) {
       await photo.scrollIntoViewIfNeeded();

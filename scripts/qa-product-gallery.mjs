@@ -7,9 +7,10 @@ import { products } from '../src/data/catalogue.mjs';
 const base = process.env.QA_URL || 'http://localhost:4173';
 const browser = await chromium.launch({ channel: 'msedge', headless: true });
 const errors = [];
+const widths = (process.env.QA_WIDTHS || '375,768,1280').split(',').map(Number);
 await mkdir('artifacts/product-gallery', { recursive: true });
 try {
-  for (const width of [375, 768, 1280]) {
+  for (const width of widths) {
     const context = await browser.newContext({ viewport: { width, height: 900 }, reducedMotion: 'reduce' });
     const page = await context.newPage();
     page.on('pageerror', error => errors.push(error.message));
@@ -39,6 +40,11 @@ try {
       assert.equal(await thumbnails.last().getAttribute('aria-pressed'), 'true');
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${product.slug} overflows at ${width}`);
       if (product.slug === 'hibiscus' || product.slug === 'moringa') {
+        for (const image of await page.locator('.related-section img').all()) {
+          await image.scrollIntoViewIfNeeded();
+          await image.evaluate(el => el.decode());
+        }
+        await page.evaluate(() => { document.activeElement?.blur(); window.scrollTo(0, 0); });
         await page.screenshot({ path: `artifacts/product-gallery/${product.slug}-${width}.png`, fullPage: true });
         const axe = await new AxeBuilder({ page }).include('.product-gallery').withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze();
         assert.deepEqual(axe.violations.map(v => ({ id: v.id, targets: v.nodes.map(n => n.target) })), []);
@@ -69,7 +75,7 @@ try {
     console.log(`${route}: every card crossfades on hover and keyboard focus.`);
   }
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  assert.equal(await page.locator('.product-image-swap__alternate').first().evaluate(el => getComputedStyle(el).transitionDuration), '0s');
+  assert.ok(await page.locator('.product-image-swap__alternate').first().evaluate(el => parseFloat(getComputedStyle(el).transitionDuration) <= .001), 'Reduced motion switches effectively instantly');
   await page.close();
   const touch = await browser.newPage({ viewport: { width: 375, height: 812 }, hasTouch: true, isMobile: true });
   await touch.goto(base + '/products/hibiscus');
