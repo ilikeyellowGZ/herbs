@@ -1,0 +1,90 @@
+{
+  "hibiscus": {
+    "src": "/images/herby-health/hibiscus-1080.webp",
+    "srcSet": "/images/herby-health/hibiscus-320.webp 320w, /images/herby-health/hibiscus-480.webp 480w, /images/herby-health/hibiscus-640.webp 640w, /images/herby-health/hibiscus-800.webp 800w, /images/herby-health/hibiscus-1080.webp 1080w",
+    "fallback": "/images/herby-health/hibiscus.jpg",
+    "width": 1080,
+    "height": 1350,
+    "alt": "Mulberry Herby Health Hibiscus carton with an engraved flower on a pale background."
+  },
+  "collagen": {
+    "src": "/images/herby-health/collagen-1080.webp",
+    "srcSet": "/images/herby-health/collagen-320.webp 320w, /images/herby-health/collagen-480.webp 480w, /images/herby-health/collagen-640.webp 640w, /images/herby-health/collagen-800.webp 800w, /images/herby-health/collagen-1080.webp 1080w",
+    "fallback": "/images/herby-health/collagen.jpg",
+    "width": 1080,
+    "height": 1350,
+    "alt": "An unlabelled jar of ivory powder with a spoon and glass of water."
+  },
+  "moringa": {
+    "src": "/images/herby-health/moringa-1080.webp",
+    "srcSet": "/images/herby-health/moringa-320.webp 320w, /images/herby-health/moringa-480.webp 480w, /images/herby-health/moringa-640.webp 640w, /images/herby-health/moringa-800.webp 800w, /images/herby-health/moringa-1080.webp 1080w",
+    "fallback": "/images/herby-health/moringa.jpg",
+    "width": 1080,
+    "height": 1350,
+    "alt": "Moringa leaflets beside a dish of finely milled green powder."
+  },
+  "sea-moss": {
+    "src": "/images/herby-health/sea-moss-1080.webp",
+    "srcSet": "/images/herby-health/sea-moss-320.webp 320w, /images/herby-health/sea-moss-480.webp 480w, /images/herby-health/sea-moss-640.webp 640w, /images/herby-health/sea-moss-800.webp 800w, /images/herby-health/sea-moss-1080.webp 1080w",
+    "fallback": "/images/herby-health/sea-moss.jpg",
+    "width": 1080,
+    "height": 1350,
+    "alt": "Branching golden sea moss in a pale dish."
+  },
+  "bay-leaves": {
+    "src": "/images/herby-health/bay-leaves-1080.webp",
+    "srcSet": "/images/herby-health/bay-leaves-320.webp 320w, /images/herby-health/bay-leaves-480.webp 480w, /images/herby-health/bay-leaves-640.webp 640w, /images/herby-health/bay-leaves-800.webp 800w, /images/herby-health/bay-leaves-1080.webp 1080w",
+    "fallback": "/images/herby-health/bay-leaves.jpg",
+    "width": 1080,
+    "height": 1350,
+    "alt": "Fresh and dried bay leaves on pale stone."
+  },
+  "cinnamon": {
+    "src": "/images/herby-health/cinnamon-1080.webp",
+    "srcSet": "/images/herby-health/cinnamon-320.webp 320w, /images/herby-health/cinnamon-480.webp 480w, /images/herby-health/cinnamon-640.webp 640w, /images/herby-health/cinnamon-800.webp 800w, /images/herby-health/cinnamon-1080.webp 1080w",
+    "fallback": "/images/herby-health/cinnamon.jpg",
+    "width": 1080,
+    "height": 1350,
+    "alt": "Cinnamon quills with curled bark and ground spice."
+  },
+  "chia-seeds": {
+    "src": "/images/herby-health/chia-seeds-1080.webp",
+    "srcSet": "/images/herby-health/chia-seeds-320.webp 320w, /images/herby-health/chia-seeds-480.webp 480w, /images/herby-health/chia-seeds-640.webp 640w, /images/herby-health/chia-seeds-800.webp 800w, /images/herby-health/chia-seeds-1080.webp 1080w",
+    "fallback": "/images/herby-health/chia-seeds.jpg",
+    "width": 1080,
+    "height": 1350,
+    "alt": "Tiny marbled chia seeds in a pale bowl."
+  },
+  "ashwagandha": {
+    "src": "/images/herby-health/ashwagandha-1080.webp",
+    "srcSet": "/images/herby-health/ashwagandha-320.webp 320w, /images/herby-health/ashwagandha-480.webp 480w, /images/herby-health/ashwagandha-640.webp 640w, /images/herby-health/ashwagandha-800.webp 800w, /images/herby-health/ashwagandha-1080.webp 1080w",
+    "fallback": "/images/herby-health/ashwagandha.jpg",
+    "width": 1080,
+    "height": 1350,
+    "alt": "Pale ashwagandha roots beside beige root powder."
+  },
+  "hibiscus-in-use": {
+    "src": "/images/herby-health/hibiscus-in-use-1080.webp",
+    "srcSet": "/images/herby-health/hibiscus-in-use-320.webp 320w, /images/herby-health/hibiscus-in-use-480.webp 480w, /images/herby-health/hibiscus-in-use-640.webp 640w, /images/herby-health/hibiscus-in-use-800.webp 800w, /images/herby-health/hibiscus-in-use-1080.webp 1080w",
+    "fallback": "/images/herby-health/hibiscus-in-use.jpg",
+    "width": 1080,
+    "height": 1350,
+    "alt": "A rose ceramic cup of hibiscus tea on a mulberry carton in warm light."
+  },
+  "hibiscus-hero": {
+    "src": "/images/herby-health/hibiscus-hero-1600.webp",
+    "srcSet": "/images/herby-health/hibiscus-hero-640.webp 640w, /images/herby-health/hibiscus-hero-960.webp 960w, /images/herby-health/hibiscus-hero-1280.webp 1280w, /images/herby-health/hibiscus-hero-1600.webp 1600w",
+    "fallback": "/images/herby-health/hibiscus-hero.jpg",
+    "width": 1600,
+    "height": 681,
+    "alt": "Backlit ruby hibiscus petals against deep plum shadows."
+  },
+  "garden-story": {
+    "src": "/images/herby-health/garden-story-1080.webp",
+    "srcSet": "/images/herby-health/garden-story-320.webp 320w, /images/herby-health/garden-story-480.webp 480w, /images/herby-health/garden-story-640.webp 640w, /images/herby-health/garden-story-800.webp 800w, /images/herby-health/garden-story-1080.webp 1080w",
+    "fallback": "/images/herby-health/garden-story.jpg",
+    "width": 1080,
+    "height": 1350,
+    "alt": "Basket of bay and moringa beside hibiscus and cinnamon in a kitchen."
+  }
+}

@@ -1,0 +1,17 @@
+:root {
+  --night: #170c14;
+  --petal: #69263f;
+  --rose: #c78082;
+  --ochre: #b57b3f;
+  --garden: #eff2e9;
+  --porcelain: #fcfbf6;
+  --olive: #45523e;
+  --rule: #45523e38;
+  --serif: 'Instrument Serif', Georgia, serif;
+  --sans: 'DM Sans', Arial, sans-serif;
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 18px;
+  --gutter: 24px;
+}

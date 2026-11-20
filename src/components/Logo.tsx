@@ -1,0 +1,17 @@
+import { Link } from 'react-router-dom';
+
+export function BotanicalMark({ className = '' }: { className?: string }) {
+  return <svg className={className} viewBox="0 0 80 96" fill="none" aria-hidden="true">
+    <g stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M40 87c-2-16-1-32 0-46M39 72C28 68 21 61 18 51c12 1 20 8 21 21ZM40 62c11-3 18-9 21-19-11 2-18 8-21 19Z" />
+      <path d="M39 70 24 57m17 3 14-12M40 40C22 46 13 37 19 28c3-4 7-4 12-3-9-9-4-20 5-18 5 1 7 6 7 10 5-11 16-12 19-3 2 5-1 10-5 13 13-2 18 8 10 15-5 5-13 2-17-1 4 12-6 18-13 10-3-3-2-7 3-11Z" />
+      <path d="m41 34-6-17m7 16 12-15M43 35l16 1M40 36l-14-5m15 7 2 9" opacity=".65" />
+      <circle cx="42" cy="35" r="3" />
+      <path d="M21 85c-8-13-11-29-8-42M14 68c-8-3-11-8-10-14 6 2 9 6 10 14Zm0-12c-2-7 0-13 5-16 2 6 0 11-5 16Zm4 24c-8-1-12-4-13-10 7 0 11 4 13 10ZM59 85c8-13 11-27 9-38m-1 20c7-3 10-7 10-13-6 2-9 6-10 13Zm-5 13c8-1 12-4 13-10-7 1-11 4-13 10Z" />
+    </g>
+  </svg>;
+}
+
+export default function Logo() {
+  return <Link className="logo" to="/" aria-label="Herby Health home"><BotanicalMark /><span>Herby Health</span></Link>;
+}

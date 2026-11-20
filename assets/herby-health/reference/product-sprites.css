@@ -1,0 +1,16 @@
+.hh-product {
+  display: inline-block;
+  width: var(--hh-product-width, 10rem);
+  aspect-ratio: 4 / 5;
+  background-image: url("./product-sprites.webp");
+  background-size: 400% 200%;
+  background-repeat: no-repeat;
+}
+.hh-product--hibiscus { background-position: 0% 0%; }
+.hh-product--collagen { background-position: 33.333333% 0%; }
+.hh-product--moringa { background-position: 66.666667% 0%; }
+.hh-product--sea-moss { background-position: 100% 0%; }
+.hh-product--bay-leaves { background-position: 0% 100%; }
+.hh-product--cinnamon { background-position: 33.333333% 100%; }
+.hh-product--chia-seeds { background-position: 66.666667% 100%; }
+.hh-product--ashwagandha { background-position: 100% 100%; }
