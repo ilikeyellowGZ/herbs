@@ -1,0 +1,11 @@
+# Legal pages
+
+Add `/terms-and-conditions` and `/privacy-policy` to the existing React Router application, page metadata registry and production prerender. Link both from a labelled footer navigation and from each other. Preserve existing work in the checkout and catalogue.
+
+Use the existing Garden, Olive and Porcelain palette, Instrument Serif headings, DM Sans body, 4px spacing scale and responsive page gutters. A shared legal-page layout provides one h1, last-updated date, introduction, an on-page contents navigation and numbered sections. Desktop has a 240px contents column and a readable 65ch article; below 880px the contents precedes the article. Links have visible focus and 44px navigation targets. No new animation or imagery.
+
+Write plain-language terms for the South African Herby Health website preview: acceptable use, product information and suitability, preview pricing/orders/delivery, statutory consumer rights, intellectual property, third-party links, proportionate liability language, changes, jurisdiction and contact. The privacy policy describes browser-memory enquiries, manual clipboard copying, optional shopping-bag local storage, hosting request data, no configured advertising/analytics, purposes, sharing, retention, security, children's information and POPIA rights. Do not fabricate business identifiers, working contact details, processors or retention periods. Explain placeholder contact details and disconnected forms explicitly. Link the official Information Regulator for complaints.
+
+Sources checked on 20 November 2026: Information Regulator privacy notice (https://inforegulator.org.za/privacy-notice/), Consumer Protection Act (https://www.gov.za/sites/default/files/32186_467.pdf) and Electronic Communications and Transactions Act (https://www.gov.za/sites/default/files/gcis_document/201409/a25-02.pdf). Draft business terms require owner verification before a live launch; no claim of legal compliance.
+
+Verify with production build, existing unit suite and real-browser checks at 375, 768 and 1280px: direct routes, unique titles/descriptions, one h1, footer/cross-page links, contents anchors, no overflow, keyboard focus and axe accessibility.

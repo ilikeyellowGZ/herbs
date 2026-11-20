@@ -508,3 +508,11 @@ dialog[open] { animation: dialog-in .3s ease both; }
   .gallery-photo { animation: none; }
   .product-card:focus-visible .product-card__image img { transform: none; }
 }
+
+/* Legal links remain available on every route. */
+.footer-legal { display: flex; align-items: center; flex-wrap: wrap; gap: 0 16px; }
+.footer-legal a { text-decoration: underline; text-underline-offset: 4px; }
+@media (max-width: 640px) {
+  .site-footer .footer-bottom { font-size: var(--text-xs); }
+  .footer-legal { width: 100%; }
+}

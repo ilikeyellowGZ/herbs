@@ -1,0 +1,72 @@
+{
+  "collagen-preparation": {
+    "source": "C:\\Users\\omoku\\.codex\\generated_images\\01a1faa5-c338-7dc0-b01f-26063569c38b\\exec-93bcf4fd-3f79-4d4b-9fc0-78b856e5ae5f.png",
+    "tool": "built-in image_gen",
+    "reference": "assets/herby-health/products/Collagen.png"
+  },
+  "collagen-serving": {
+    "source": "C:\\Users\\omoku\\.codex\\generated_images\\01a1faa5-c338-7dc0-b01f-26063569c38b\\exec-af87cc71-62fa-425b-8547-de8ed007e556.png",
+    "tool": "built-in image_gen",
+    "reference": "assets/herby-health/products/Collagen.png"
+  },
+  "moringa-preparation": {
+    "source": "C:\\Users\\omoku\\.codex\\generated_images\\01a1faa5-c338-7dc0-b01f-26063569c38b\\exec-443cb5b1-d8b9-4af4-a1f8-fa9780890d29.png",
+    "tool": "built-in image_gen",
+    "reference": "assets/herby-health/products/Moringa.png"
+  },
+  "moringa-serving": {
+    "source": "C:\\Users\\omoku\\.codex\\generated_images\\01a1faa5-c338-7dc0-b01f-26063569c38b\\exec-6cc636b5-f1cf-4c6c-a438-679ceef603d5.png",
+    "tool": "built-in image_gen",
+    "reference": "assets/herby-health/products/Moringa.png"
+  },
+  "sea-moss-preparation": {
+    "source": "C:\\Users\\omoku\\.codex\\generated_images\\01a1faa5-c338-7dc0-b01f-26063569c38b\\exec-1d883625-a0cb-4c91-9621-9fe21c9db801.png",
+    "tool": "built-in image_gen",
+    "reference": "assets/herby-health/products/Sea-Moss.png"
+  },
+  "sea-moss-serving": {
+    "source": "C:\\Users\\omoku\\.codex\\generated_images\\01a1faa5-c338-7dc0-b01f-26063569c38b\\exec-25f84497-4c4e-4422-bf1d-6f408193b01c.png",
+    "tool": "built-in image_gen",
+    "reference": "assets/herby-health/products/Sea-Moss.png"
+  },
+  "bay-leaves-preparation": {
+    "source": "C:\\Users\\omoku\\.codex\\generated_images\\01a1faa5-c338-7dc0-b01f-26063569c38b\\exec-283592a9-f5a9-4eae-becc-39428b9f9af0.png",
+    "tool": "built-in image_gen",
+    "reference": "assets/herby-health/products/Bay-Leaves.png"
+  },
+  "bay-leaves-serving": {
+    "source": "C:\\Users\\omoku\\.codex\\generated_images\\01a1faa5-c338-7dc0-b01f-26063569c38b\\exec-a39129a9-0f1c-497a-8b20-fd768796d9bb.png",
+    "tool": "built-in image_gen",
+    "reference": "assets/herby-health/products/Bay-Leaves.png"
+  },
+  "cinnamon-preparation": {
+    "source": "C:\\Users\\omoku\\.codex\\generated_images\\01a1faa5-c338-7dc0-b01f-26063569c38b\\exec-85aa5bba-345b-48b1-89d8-f40a45b6fb61.png",
+    "tool": "built-in image_gen",
+    "reference": "assets/herby-health/products/Cinnamon.png"
+  },
+  "cinnamon-serving": {
+    "source": "C:\\Users\\omoku\\.codex\\generated_images\\01a1faa5-c338-7dc0-b01f-26063569c38b\\exec-c0b0a6ff-49e3-41d2-8eac-62a23f4ac806.png",
+    "tool": "built-in image_gen",
+    "reference": "assets/herby-health/products/Cinnamon.png"
+  },
+  "chia-seeds-preparation": {
+    "source": "C:\\Users\\omoku\\.codex\\generated_images\\01a1faa5-c338-7dc0-b01f-26063569c38b\\exec-8f98b51b-0144-4928-a3dd-af2057db0c80.png",
+    "tool": "built-in image_gen",
+    "reference": "assets/herby-health/products/Chia-Seeds.png"
+  },
+  "chia-seeds-serving": {
+    "source": "C:\\Users\\omoku\\.codex\\generated_images\\01a1faa5-c338-7dc0-b01f-26063569c38b\\exec-3a0b687c-ed9b-43ed-95e0-a142227a978c.png",
+    "tool": "built-in image_gen",
+    "reference": "assets/herby-health/products/Chia-Seeds.png"
+  },
+  "ashwagandha-preparation": {
+    "source": "C:\\Users\\omoku\\.codex\\generated_images\\01a1faa5-c338-7dc0-b01f-26063569c38b\\exec-719c274c-02a4-4cff-a526-ce89312258e0.png",
+    "tool": "built-in image_gen",
+    "reference": "assets/herby-health/products/Ashwagandha.png"
+  },
+  "ashwagandha-serving": {
+    "source": "C:\\Users\\omoku\\.codex\\generated_images\\01a1faa5-c338-7dc0-b01f-26063569c38b\\exec-5f973a04-b007-4c5f-af60-4af8e28cb15c.png",
+    "tool": "built-in image_gen",
+    "reference": "assets/herby-health/products/Ashwagandha.png"
+  }
+}

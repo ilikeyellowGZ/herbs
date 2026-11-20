@@ -12,6 +12,7 @@ const ingredients = [
 ];
 
 // Proposed retail offers. Confirm supplier labels and stock before live sales.
+/** @type {Record<string, {price: number, packSize: string, form: string, serving: string}>} */
 const offers = {
   hibiscus: { price: 95, packSize: '100 g', form: 'Dried hibiscus petals', serving: 'Steep to taste and follow the pack preparation instructions.' },
   collagen: { price: 295, packSize: '300 g', form: 'Collagen powder', serving: 'Use the measured serving on the supplied label; source and allergens must be confirmed.' },

@@ -31,9 +31,10 @@ export function changeQuantity(cart, slug, quantity) {
 }
 
 export function cartSummary(cart, method = 'courier') {
-  const items = normaliseCart(cart).map(item => {
+  const items = normaliseCart(cart).flatMap(item => {
     const product = findProduct(item.slug);
-    return { ...item, product, lineTotal: Math.round(product.price * 100) * item.quantity };
+    if (!product) return [];
+    return [{ ...item, product, lineTotal: Math.round(product.price * 100) * item.quantity }];
   });
   const subtotal = items.reduce((sum, item) => sum + item.lineTotal, 0);
   const count = items.reduce((sum, item) => sum + item.quantity, 0);

@@ -10,7 +10,8 @@ const errors = [];
 await mkdir('artifacts/product-gallery', { recursive: true });
 try {
   for (const width of [375, 768, 1280]) {
-    const page = await browser.newPage({ viewport: { width, height: 900 }, reducedMotion: 'reduce' });
+    const context = await browser.newContext({ viewport: { width, height: 900 }, reducedMotion: 'reduce' });
+    const page = await context.newPage();
     page.on('pageerror', error => errors.push(error.message));
     page.on('response', response => { if (response.status() >= 400) errors.push(`${response.status()} ${response.url()}`); });
     for (const product of products) {
@@ -43,7 +44,7 @@ try {
         assert.deepEqual(axe.violations.map(v => ({ id: v.id, targets: v.nodes.map(n => n.target) })), []);
       }
     }
-    await page.close();
+    await context.close();
     console.log(`All eight galleries at ${width}px: images, thumbnails, wrapping, keyboard, overflow and accessibility passed.`);
   }
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
@@ -60,6 +61,7 @@ try {
       assert.equal(await alternate.locator('img').getAttribute('alt'), '');
       await page.mouse.move(0, 0);
       await page.waitForFunction(el => getComputedStyle(el).opacity === '0', await alternate.elementHandle());
+      await page.keyboard.press('Tab');
       await card.focus();
       await page.waitForFunction(el => getComputedStyle(el).opacity === '1', await alternate.elementHandle());
       await card.evaluate(el => el.blur());

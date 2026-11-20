@@ -35,7 +35,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const add = useCallback((slug: string, quantity = 1) => {
     if (!Number.isSafeInteger(quantity) || quantity < 1) return;
     setCart(previous => changeQuantity(previous, slug, (previous.find(item => item.slug === slug)?.quantity || 0) + quantity));
-    setNotice(`Added to your bag. Maximum ${MAX_QUANTITY} of each item.`);
+    setNotice('Added to your bag.');
     clearTimeout(noticeTimer.current);
     noticeTimer.current = setTimeout(() => setNotice(''), 3500);
   }, []);
