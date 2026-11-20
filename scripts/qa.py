@@ -17,21 +17,19 @@ with sync_playwright() as p:
     page.on('pageerror', lambda error: report['errors'].append(str(error)))
     page.on('response', lambda response: report['failed_requests'].append({'url': response.url, 'status': response.status}) if response.status >= 400 else None)
     page.goto(BASE, wait_until='networkidle')
-    expect(page.get_by_role('heading', name='The hibiscus moment.')).to_be_visible()
+    expect(page.get_by_role('heading', level=1)).to_contain_text('A little closer to nature.')
 
-    # The complete featured spread is one ingredient control, not two destinations.
-    page.locator('.featured-product').click()
-    expect(page.get_by_role('dialog', name='Hibiscus', exact=True)).to_be_visible()
-    page.keyboard.press('Escape')
-    expect(page.locator('.featured-product')).to_be_focused()
-    for slug in SLUGS[1:]:
+    # All eight ingredients share the everyday essentials grid.
+    expect(page.locator('.product-grid .product-card')).to_have_count(8)
+    assert page.locator('.product-grid .product-card').evaluate_all('(cards) => cards.map(card => card.dataset.ingredient)') == SLUGS
+    for slug in SLUGS:
         card = page.locator(f'.product-grid .product-card[data-ingredient="{slug}"]')
         card.click()
         expect(page.locator('.quick-dialog')).to_be_visible()
         expect(page.locator('.quick-dialog h2')).to_have_text(slug.replace('-', ' ').title())
         page.keyboard.press('Escape')
         expect(card).to_be_focused()
-    report['interactions'].append('Featured pair and seven cards open ingredient details and restore focus')
+    report['interactions'].append('All eight everyday essentials cards open ingredient details and restore focus')
     page.evaluate('window.scrollTo({top:0,behavior:"instant"})')
     page.wait_for_timeout(600)
 
@@ -121,9 +119,7 @@ with sync_playwright() as p:
             assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'), f'Overflow at {width}: {selector}'
         columns = page.locator('.product-grid').first.evaluate('(e)=>getComputedStyle(e).gridTemplateColumns.split(" ").length')
         assert columns == (2 if width <= 880 else 4), f'{width}: {columns} columns'
-        pair = page.locator('.featured-pair').evaluate('(e)=>getComputedStyle(e).gridTemplateColumns.split(" ").length')
-        assert pair == 2
-        report['widths'].append({'width': width, 'overflow': False, 'columns': columns, 'feature_columns': pair})
+        report['widths'].append({'width': width, 'overflow': False, 'columns': columns})
 
     # Mobile modal navigation, focus containment and Escape.
     page.set_viewport_size({'width': 390, 'height': 844})
@@ -155,7 +151,7 @@ with sync_playwright() as p:
     page.emulate_media(reduced_motion='reduce')
     page.goto(BASE, wait_until='networkidle')
     expect(page.get_by_role('button', name='Explore hibiscus')).to_be_visible()
-    assert page.locator('.hero-expand').evaluate('(e)=>Math.abs(e.clientHeight-innerHeight)<2')
+    assert page.locator('.hero-expand').evaluate('(e)=>Math.abs(e.clientHeight-e.clientWidth*941/1672)<2')
     assert page.locator('.hero-expand .scroll-expand__frame').evaluate('(e)=>getComputedStyle(e).clipPath') == 'none'
     report['interactions'].append('Reduced motion keeps hero content reachable and removes expansion travel')
     page.emulate_media(reduced_motion='no-preference')
@@ -176,7 +172,7 @@ with sync_playwright() as p:
     assert page.locator('h1').evaluate('(e)=>getComputedStyle(e).fontFamily.includes("Instrument Serif")')
     nojs = browser.new_context(java_script_enabled=False)
     static = nojs.new_page()
-    for route, text in [('/', 'The hibiscus'), ('/products/hibiscus', 'Hibiscus'), ('/products/moringa', 'Moringa')]:
+    for route, text in [('/', 'A little closer to nature.'), ('/products/hibiscus', 'Hibiscus'), ('/products/moringa', 'Moringa')]:
         static.goto(BASE + route, wait_until='load')
         expect(static.locator('h1')).to_contain_text(text)
     nojs.close()

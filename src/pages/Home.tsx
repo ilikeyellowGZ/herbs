@@ -33,13 +33,21 @@ export default function Home() {
   }, [reduced]);
 
   return <div ref={root} id="home">
-    <ScrollExpand className="hero-expand" sizes="(max-width: 640px) 1600px, 100vw" src="/images/herby-health/hibiscus-hero-1600.webp" srcSet="/images/herby-health/hibiscus-hero-640.webp 640w, /images/herby-health/hibiscus-hero-960.webp 960w, /images/herby-health/hibiscus-hero-1280.webp 1280w, /images/herby-health/hibiscus-hero-1600.webp 1600w" priority title={<div className="hero-copy"><p className="eyebrow">Nature, in your own time.</p><h1>The hibiscus<br /><em>moment.</em></h1><div className="hero-links"><button className="text-link" onClick={() => setQuick(products[0])}>Explore hibiscus <ArrowUpRight size={17} strokeWidth={1.2} /></button><Link className="text-link" to="/#collection">The collection</Link></div></div>}><p className="hero-full-copy">A bright little ritual.<br /><em>All yours.</em></p></ScrollExpand>
+    <section className="home-hero" aria-labelledby="hero-heading">
+      <div className="hero-intro section-gutters">
+        <p className="hero-kicker">Garden</p>
+        <h1 id="hero-heading">A little closer to nature.<br />Botanical ingredients and everyday rituals, simply chosen to be part of your day.</h1>
+        <div className="hero-intro-links"><button className="text-link" onClick={() => setQuick(products[0])}>Explore hibiscus <ArrowUpRight size={17} strokeWidth={1.2} /></button><Link className="text-link" to="/#collection">The collection <ArrowUpRight size={17} strokeWidth={1.2} /></Link></div>
+      </div>
+      <ScrollExpand className="hero-expand" variant="editorial" src={images['garden-aerial'].src} srcSet={images['garden-aerial'].srcSet} sizes="max(100vw, 178vh)" alt={images['garden-aerial'].alt} width={images['garden-aerial'].width} height={images['garden-aerial'].height} priority startRadius={0} mediaZoom={1} overlayScrim={.38} title={null}>
+        <p className="hero-full-copy">A little closer<br /><em>to nature.</em></p>
+      </ScrollExpand>
+    </section>
 
     <section id="collection" className="collection section-gutters">
       <div className="collection-intro" data-reveal><p className="eyebrow">The collection</p><h2>Eight ingredients for<br /><em>everyday rituals.</em></h2><p>A few good things from nature.<br />For your cup, your kitchen, your own kind of day.</p></div>
-      <button type="button" className="featured-product" onClick={() => setQuick(products[0])} aria-haspopup="dialog" data-reveal><div className="featured-pair"><ResponsiveImage name="hibiscus" sizes="(min-width: 1248px) 600px, (max-width: 400px) calc(50vw - 20px), calc(50vw - 24px)" /><ResponsiveImage name="hibiscus-in-use" sizes="(min-width: 1248px) 600px, (max-width: 400px) calc(50vw - 20px), calc(50vw - 24px)" /><span className="featured-label">Meet your new ritual <ArrowUpRight size={17} /></span></div><div className="featured-caption"><p className="eyebrow">Botanical tea</p><h3>Hibiscus</h3><p>Deep ruby. Brightly tart. Best enjoyed slowly.</p></div></button>
       <div className="collection-rule"><span>The everyday essentials</span><span>Good things, simply chosen.</span></div>
-      <div className="product-grid">{products.slice(1).map(product => <div key={product.slug} data-reveal><ProductCard product={product} onOpen={setQuick} /></div>)}</div>
+      <div className="product-grid">{products.map(product => <div key={product.slug} data-reveal><ProductCard product={product} onOpen={setQuick} /></div>)}</div>
     </section>
 
     <section id="rituals" className="rituals-section section-gutters">

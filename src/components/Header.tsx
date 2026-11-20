@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, Search, X, ArrowUpRight } from 'lucide-react';
 import Logo, { BotanicalMark } from './Logo';
@@ -9,32 +9,18 @@ const links = [{ label: 'Collection', href: '/#collection' }, { label: 'Rituals'
 
 export default function Header() {
   const location = useLocation();
-  const [isDark, setDark] = useState(location.pathname === '/');
   const [query, setQuery] = useState('');
   const menu = useRef<HTMLDialogElement>(null);
   const search = useRef<HTMLDialogElement>(null);
   useDialogFocus(menu);
   useDialogFocus(search);
-  useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => setDark(entry.isIntersecting), { rootMargin: '-104px 0px 0px 0px', threshold: 0 });
-    const attach = () => {
-      const hero = document.querySelector('.hero-expand');
-      if (!hero || location.pathname !== '/') { setDark(false); return; }
-      observer.observe(hero);
-    };
-    attach();
-    const mutations = new MutationObserver(attach);
-    const main = document.getElementById('main');
-    if (main) mutations.observe(main, { childList: true, subtree: true });
-    return () => { observer.disconnect(); mutations.disconnect(); };
-  }, [location.pathname]);
 
   const close = () => { menu.current?.close(); search.current?.close(); };
   const filtered = products.filter(product => `${product.name} ${product.category}`.toLowerCase().includes(query.toLowerCase()));
 
   return <>
     <a className="skip-link" href="#main">Skip to content</a>
-    <header className={`site-header ${isDark ? 'header-dark' : 'header-light'}`}>
+    <header className={`site-header header-light ${location.pathname === '/' ? 'header-editorial' : ''}`}>
       <div className="announcement">Small rituals. A little closer to nature. <span>Gauteng, South Africa</span></div>
       <div className="nav-bar"><Logo /><nav className="desktop-nav" aria-label="Main navigation">{links.map(link => <Link className="nav-link" key={link.href} to={link.href}>{link.label}</Link>)}</nav>
         <div className="nav-actions"><Link className="hello-link" to="/#contact">Say hello <ArrowUpRight size={16} strokeWidth={1.3} /></Link><button className="icon-button" onClick={() => search.current?.showModal()} aria-label="Search the collection"><Search size={20} strokeWidth={1.3} /></button><button className="icon-button menu-trigger" onClick={() => menu.current?.showModal()} aria-label="Open menu"><Menu size={24} strokeWidth={1.3} /></button></div>
