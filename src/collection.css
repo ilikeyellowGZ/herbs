@@ -73,7 +73,7 @@
 .quick-visual picture { height: auto; aspect-ratio: 4/5; }
 .quick-visual > span { display: block; font-size: var(--text-sm); text-align: center; padding: 16px; }
 .catalogue-dialog .quick-content { min-width: 0; padding: 24px 32px 32px; }
-.quick-heading { display: flex; justify-content: space-between; align-items: center; gap: 8px; position: sticky; top: -24px; background: var(--porcelain); z-index: 2; }
+.quick-heading { display: flex; justify-content: space-between; align-items: center; gap: 8px; position: sticky; top: 0; background: var(--porcelain); z-index: 2; }
 .catalogue-dialog .quick-content h2 { font-size: 56px; margin-block: 8px 0; }
 .catalogue-dialog .quick-content > p:not(.eyebrow) { font-size: var(--text-base); margin-bottom: 20px; }
 .catalogue-dialog .catalogue-price { margin-bottom: 20px; }
@@ -94,7 +94,6 @@
   .quick-visual picture img { object-fit: contain; }
   .quick-visual > span { padding-block: 12px; }
   .catalogue-dialog .quick-content { padding: 20px 24px 24px; }
-  .quick-heading { top: -20px; }
   .collection-help { grid-template-columns: 1fr; gap: 40px; padding-block: 48px; }
   .catalogue-promise { gap: 24px; justify-content: space-between; }
 }

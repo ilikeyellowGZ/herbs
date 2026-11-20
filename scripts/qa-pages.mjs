@@ -58,44 +58,10 @@ try {
     assert.equal(helloHref, '/contact', 'Say hello opens the contact page');
     await page.close();
   }
-  const pointerPage = await browser.newPage({ viewport: { width: 1280, height: 900 } });
-  await pointerPage.goto(base + '/rituals', { waitUntil: 'networkidle' });
-  await pointerPage.locator('footer').scrollIntoViewIfNeeded();
-  await pointerPage.waitForTimeout(400);
-  const footerBox = await pointerPage.locator('footer').boundingBox();
-  const y = Math.max(180, footerBox.y + 100);
-  await pointerPage.mouse.move(200, y);
-  await pointerPage.waitForTimeout(200);
-  assert.equal(await pointerPage.locator('.footer-cursor').evaluate(el => getComputedStyle(el).opacity), '1');
-  assert.equal(await pointerPage.locator('.footer-cursor').evaluate(el => getComputedStyle(el).borderRadius), '50%');
-  assert.equal(await pointerPage.locator('.footer-cursor').evaluate(el => {
-    const lag = getComputedStyle(el).getPropertyValue('--footer-cursor-lag').trim();
-    return parseFloat(lag) * (lag.endsWith('ms') ? 1 : 1000);
-  }), 200);
-  await pointerPage.mouse.move(700, y);
-  await pointerPage.waitForTimeout(80);
-  const trailingX = await pointerPage.locator('.footer-cursor').evaluate(el => el.getBoundingClientRect().x + 32);
-  assert.ok(trailingX > 200 && trailingX < 650, `Cursor should trail smoothly: ${trailingX}`);
-  await pointerPage.waitForTimeout(1400);
-  const settledX = await pointerPage.locator('.footer-cursor').evaluate(el => el.getBoundingClientRect().x + 32);
-  assert.ok(Math.abs(settledX - 700) < 2);
-  await pointerPage.screenshot({ path: 'artifacts/pages/footer-cursor.png' });
-  await pointerPage.keyboard.press('Tab');
-  assert.equal(await pointerPage.locator('footer').evaluate(el => el.classList.contains('has-footer-cursor')), false);
-  await pointerPage.emulateMedia({ reducedMotion: 'reduce' });
-  await pointerPage.mouse.move(500, y);
-  assert.equal(await pointerPage.locator('footer').evaluate(el => el.classList.contains('has-footer-cursor')), false);
-  await pointerPage.emulateMedia({ reducedMotion: 'no-preference' });
-  await pointerPage.mouse.move(600, y);
-  await pointerPage.mouse.move(100, 20);
-  assert.equal(await pointerPage.locator('footer').evaluate(el => el.classList.contains('has-footer-cursor')), false);
-  await pointerPage.close();
-  const touchPage = await browser.newPage({ hasTouch: true, isMobile: true, viewport: { width: 375, height: 844 } });
-  await touchPage.goto(base + '/rituals', { waitUntil: 'networkidle' });
-  await touchPage.locator('footer').scrollIntoViewIfNeeded();
-  await touchPage.locator('.footer-brand').tap();
-  assert.equal(await touchPage.locator('footer').evaluate(el => el.classList.contains('has-footer-cursor')), false);
-  await touchPage.close();
+  execFileSync(process.execPath, ['scripts/qa-footer.mjs'], {
+    stdio: 'inherit',
+    env: { ...process.env, QA_URL: base },
+  });
   assert.deepEqual(errors, []);
   console.log('Dedicated pages, responsive layouts, FAQs, navigation, enquiry preselection, draft persistence and footer cursor behavior passed.');
 } finally { await browser.close(); }

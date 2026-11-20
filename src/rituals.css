@@ -1,0 +1,37 @@
+.rituals-hero { padding-bottom: 48px; }
+.rituals-intro { padding-block: 80px 48px; text-align: center; }
+.rituals-intro h1 { margin: 20px 0 24px; font-size: 64px; line-height: 1.05; letter-spacing: -.02em; }
+.rituals-intro > p:last-child { font-size: var(--text-base); line-height: 1.7; }
+.rituals-hero-figure { max-width: 1440px; margin: 0 auto; }
+.rituals-hero-image { aspect-ratio: 16 / 9; height: auto; overflow: hidden; }
+.rituals-hero-image img { object-position: center 52%; }
+.rituals-hero-caption { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-top: 16px; font-size: var(--text-sm); }
+.rituals-feature { padding-block: 80px; background: var(--porcelain); border-top: 1px solid var(--rule); }
+.rituals-feature-inner { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 80px; max-width: 1200px; margin: 0 auto; }
+.rituals-preparation-image { aspect-ratio: 4 / 5; height: auto; }
+.rituals-feature-copy h2 { margin-block: 24px 32px; font-size: 56px; line-height: 1.1; letter-spacing: -.02em; }
+.rituals-feature-copy > p:not(.eyebrow) { max-width: 48ch; font-size: var(--text-base); line-height: 1.8; margin-bottom: 20px; }
+.rituals-feature-copy .text-link { margin-top: 12px; }
+.rituals-page .rituals-section { border-bottom: 0; }
+.rituals-page .rituals-heading h2 { font-size: 40px; }
+
+@media (max-width: 1100px) {
+  .rituals-feature-inner { gap: 48px; }
+  .rituals-feature-copy h2 { font-size: 48px; }
+}
+
+@media (max-width: 767px) {
+  .rituals-feature { padding-block: 48px; }
+  .rituals-feature-inner { grid-template-columns: 1fr; gap: 40px; max-width: 560px; }
+  .rituals-feature-copy h2 { font-size: 40px; margin-block: 20px 24px; }
+  .rituals-hero-caption { align-items: flex-start; flex-direction: column; gap: 4px; }
+}
+
+@media (max-width: 640px) {
+  .rituals-hero { padding-bottom: 32px; }
+  .rituals-intro { padding-block: 48px 40px; }
+  .rituals-intro h1 { font-size: 48px; }
+  .rituals-hero-image { aspect-ratio: 1; }
+  .rituals-hero-image img { object-position: 48% center; }
+  .rituals-page .rituals-heading h2 { font-size: 40px; }
+}

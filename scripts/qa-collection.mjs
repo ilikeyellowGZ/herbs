@@ -3,14 +3,15 @@ import { chromium } from 'playwright';
 import AxeBuilder from '@axe-core/playwright';
 import { mkdir } from 'node:fs/promises';
 
-const browser = await chromium.launch({ channel: 'chrome', headless: true });
+const browser = await chromium.launch({ channel: process.env.QA_BROWSER || (process.platform === 'win32' ? 'msedge' : 'chrome'), headless: true });
 const base = process.env.QA_URL || 'http://localhost:4173';
 const errors = [];
 await mkdir('artifacts/collection', { recursive: true });
 try {
   for (const width of [375, 768, 1280]) {
-    const page = await browser.newPage({ viewport: { width, height: 900 }, reducedMotion: 'reduce' });
-    page.on('pageerror', error => errors.push(error.message));
+    const context = await browser.newContext({ viewport: { width, height: 900 }, reducedMotion: 'reduce' });
+    const page = await context.newPage();
+    page.on('pageerror', error => errors.push(`${page.url()}: ${error.message}`));
     await page.goto(base + '/collection');
     await page.getByRole('searchbox', { name: 'Search ingredients' }).waitFor();
     assert.equal(await page.locator('main h1').count(), 1);
@@ -18,6 +19,11 @@ try {
     assert.equal(await page.locator('.catalogue-card').getByText('Price on enquiry', { exact: true }).count(), 8);
     assert.equal(await page.locator('#collection-sort option[value="price-asc"]').isDisabled(), true);
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `Overflow at ${width}`);
+    for (const photo of await page.locator('.catalogue-card__photo').all()) {
+      await photo.scrollIntoViewIfNeeded();
+      await photo.locator('img').evaluate(image => image.decode());
+    }
+    await page.evaluate(() => window.scrollTo(0, 0));
     await page.screenshot({ path: `artifacts/collection/collection-${width}.png`, fullPage: true });
     const collectionAxe = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze();
     assert.deepEqual(collectionAxe.violations.map(v => ({ id: v.id, nodes: v.nodes.map(n => n.target) })), [], `Collection accessibility ${width}`);
@@ -48,6 +54,9 @@ try {
     await dialog.getByRole('button', { name: 'Suitability & things to know', exact: true }).click();
     const visiblePanel = dialog.locator('.accordion [role="region"]:visible');
     assert.match(await visiblePanel.textContent(), /Do not swallow spoonfuls of dry chia/);
+    const closeBounds = await dialog.getByRole('button', { name: 'Close ingredient details' }).boundingBox();
+    const dialogBounds = await dialog.boundingBox();
+    assert.ok(closeBounds.y >= dialogBounds.y && closeBounds.y + closeBounds.height <= dialogBounds.y + dialogBounds.height, 'Dialog close remains fully visible');
     await page.screenshot({ path: `artifacts/collection/guide-${width}.png` });
     const dialogAxe = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze();
     assert.deepEqual(dialogAxe.violations.map(v => ({ id: v.id, nodes: v.nodes.map(n => n.target) })), [], `Dialog accessibility ${width}`);
@@ -62,7 +71,7 @@ try {
     await page.waitForURL('**/contact');
     await page.locator('select[name="ingredient"]').waitFor();
     assert.equal(await page.locator('select[name="ingredient"]').inputValue(), 'chia-seeds');
-    await page.close();
+    await context.close();
     console.log(`Collection ${width}px: layout, filters, search, sort, URL/back/reload, dialog keyboard, enquiry and axe passed.`);
   }
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });

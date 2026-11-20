@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Search, X, ChevronDown, Leaf, CupSoda, BookOpen, SlidersHorizontal } from 'lucide-react';
 import { products } from '../data/catalogue.mjs';
@@ -8,6 +8,10 @@ import ResponsiveImage from './ResponsiveImage';
 import ProductPrice from './ProductPrice';
 import QuickView from './QuickView';
 import Accordion from './Accordion';
+
+const subscribeToHydration = () => () => {};
+const clientReady = () => true;
+const serverReady = () => false;
 
 function CollectionCard({ product, onOpen, priority }: { product: Product; onOpen: (product: Product) => void; priority: boolean }) {
   return <article className="catalogue-card" aria-labelledby={`ingredient-${product.slug}`}>
@@ -22,10 +26,13 @@ function CollectionCard({ product, onOpen, priority }: { product: Product; onOpe
 export default function CatalogueBrowser() {
   const [quick, setQuick] = useState<Product | null>(null);
   const [params, setParams] = useSearchParams();
-  const query = params.get('q') || '';
-  const category = collectionCategories.some(item => item.value === params.get('category')) ? params.get('category')! : 'all';
+  // Static HTML is generated without a query string. Match it during hydration,
+  // then read the visitor's shareable filters once React takes over.
+  const hydrated = useSyncExternalStore(subscribeToHydration, clientReady, serverReady);
+  const query = hydrated ? params.get('q') || '' : '';
+  const category = hydrated && collectionCategories.some(item => item.value === params.get('category')) ? params.get('category')! : 'all';
   const pricesAvailable = products.some(hasPrice);
-  const requestedSort = params.get('sort') || 'featured';
+  const requestedSort = hydrated ? params.get('sort') || 'featured' : 'featured';
   const sort = sortOptions.some(item => item.value === requestedSort) && (pricesAvailable || !requestedSort.startsWith('price')) ? requestedSort : 'featured';
   const visible: Product[] = queryProducts(products, { query, category, sort });
   const filtered = Boolean(query || category !== 'all');

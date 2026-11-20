@@ -1,136 +1,117 @@
-import React, { useEffect, useState } from "react";
+// Adapted from Aceternity UI's Following Pointer registry component.
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { AnimatePresence, animate, motion, useMotionValue, type MotionValue } from 'motion/react';
+import { cn } from '@/lib/utils';
 
-import { motion, AnimatePresence, useMotionValue } from "motion/react";
-import { cn } from "@/lib/utils";
+type FollowerPointerCardProps = {
+  children: ReactNode;
+  className?: string;
+  pointer?: ReactNode;
+  title?: ReactNode;
+  as?: 'div' | 'footer';
+};
 
-export const FollowerPointerCard = ({
+export function FollowerPointerCard({
   children,
   className,
+  pointer,
   title,
-}: {
-  children: React.ReactNode;
-  className?: string;
-  title?: string | React.ReactNode;
-}) => {
+  as: Region = 'div',
+}: FollowerPointerCardProps) {
+  const region = useRef<HTMLDivElement & HTMLElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const ref = React.useRef<HTMLDivElement>(null);
-  const [rect, setRect] = useState<DOMRect | null>(null);
-  const [isInside, setIsInside] = useState<boolean>(false); // Add this line
+  const [isInside, setIsInside] = useState(false);
 
   useEffect(() => {
-    if (ref.current) {
-      setRect(ref.current.getBoundingClientRect());
-    }
-  }, []);
+    const element = region.current;
+    if (!element) return;
+    const enabled = window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)');
+    const size = parseFloat(getComputedStyle(element).getPropertyValue('--footer-cursor-size')) || 64;
+    const radius = size / 2;
+    let active = false;
+    let movement: { stop(): void }[] = [];
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (rect) {
-      const scrollX = window.scrollX;
-      const scrollY = window.scrollY;
-      x.set(e.clientX - rect.left + scrollX);
-      y.set(e.clientY - rect.top + scrollY);
-    }
-  };
-  const handleMouseLeave = () => {
-    setIsInside(false);
-  };
+    const stopMovement = () => {
+      movement.forEach(animation => animation.stop());
+      movement = [];
+    };
+    const hide = () => {
+      active = false;
+      stopMovement();
+      setIsInside(false);
+    };
+    const move = (event: PointerEvent) => {
+      if (!enabled.matches || event.pointerType !== 'mouse') {
+        hide();
+        return;
+      }
+      stopMovement();
+      // Keep the logo beside the native pointer and inside the viewport.
+      const nextX = Math.max(radius, Math.min(event.clientX + radius + 16, innerWidth - radius));
+      const nextY = Math.max(radius, Math.min(event.clientY + radius + 16, innerHeight - radius));
+      if (!active) {
+        x.set(nextX);
+        y.set(nextY);
+        active = true;
+        setIsInside(true);
+      } else {
+        movement = [
+          animate(x, nextX, { duration: 0.2, ease: 'easeOut' }),
+          animate(y, nextY, { duration: 0.2, ease: 'easeOut' }),
+        ];
+      }
+    };
 
-  const handleMouseEnter = () => {
-    setIsInside(true);
-  };
+    element.addEventListener('pointermove', move);
+    element.addEventListener('pointerleave', hide);
+    element.addEventListener('pointercancel', hide);
+    enabled.addEventListener('change', hide);
+    window.addEventListener('blur', hide);
+    window.addEventListener('resize', hide);
+    window.addEventListener('scroll', hide, true);
+    document.addEventListener('keydown', hide);
+    document.addEventListener('visibilitychange', hide);
+    return () => {
+      stopMovement();
+      element.removeEventListener('pointermove', move);
+      element.removeEventListener('pointerleave', hide);
+      element.removeEventListener('pointercancel', hide);
+      enabled.removeEventListener('change', hide);
+      window.removeEventListener('blur', hide);
+      window.removeEventListener('resize', hide);
+      window.removeEventListener('scroll', hide, true);
+      document.removeEventListener('keydown', hide);
+      document.removeEventListener('visibilitychange', hide);
+    };
+  }, [x, y]);
+
   return (
-    <div
-      onMouseLeave={handleMouseLeave}
-      onMouseEnter={handleMouseEnter}
-      onMouseMove={handleMouseMove}
-      style={{
-        cursor: "none",
-      }}
-      ref={ref}
-      className={cn("relative", className)}
-    >
+    <Region ref={region} className={cn('relative', className)}>
       <AnimatePresence>
-        {isInside && <FollowPointer x={x} y={y} title={title} />}
+        {isInside && <FollowPointer x={x} y={y}>{pointer ?? title}</FollowPointer>}
       </AnimatePresence>
       {children}
-    </div>
+    </Region>
   );
-};
+}
 
-export const FollowPointer = ({
-  x,
-  y,
-  title,
-}: {
-  x: any;
-  y: any;
-  title?: string | React.ReactNode;
-}) => {
-  const colors = [
-    "#0ea5e9",
-    "#737373",
-    "#14b8a6",
-    "#22c55e",
-    "#3b82f6",
-    "#ef4444",
-    "#eab308",
-  ];
+export function FollowPointer({ x, y, children }: {
+  x: MotionValue<number>;
+  y: MotionValue<number>;
+  children: ReactNode;
+}) {
   return (
     <motion.div
-      className="absolute z-50 h-4 w-4 rounded-full"
-      style={{
-        top: y,
-        left: x,
-        pointerEvents: "none",
-      }}
-      initial={{
-        scale: 1,
-        opacity: 1,
-      }}
-      animate={{
-        scale: 1,
-        opacity: 1,
-      }}
-      exit={{
-        scale: 0,
-        opacity: 0,
-      }}
+      aria-hidden="true"
+      className="following-pointer pointer-events-none fixed left-0 top-0 z-40"
+      style={{ x, y }}
+      initial={{ opacity: 0, scale: 0.7 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.7 }}
+      transition={{ duration: 0.16, ease: 'easeOut' }}
     >
-      <svg
-        stroke="currentColor"
-        fill="currentColor"
-        strokeWidth="1"
-        viewBox="0 0 16 16"
-        className="h-6 w-6 -translate-x-[12px] -translate-y-[10px] -rotate-[70deg] transform stroke-sky-600 text-sky-500"
-        height="1em"
-        width="1em"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path d="M14.082 2.182a.5.5 0 0 1 .103.557L8.528 15.467a.5.5 0 0 1-.917-.007L5.57 10.694.803 8.652a.5.5 0 0 1-.006-.916l12.728-5.657a.5.5 0 0 1 .556.103z"></path>
-      </svg>
-      <motion.div
-        style={{
-          backgroundColor: colors[Math.floor(Math.random() * colors.length)],
-        }}
-        initial={{
-          scale: 0.5,
-          opacity: 0,
-        }}
-        animate={{
-          scale: 1,
-          opacity: 1,
-        }}
-        exit={{
-          scale: 0.5,
-          opacity: 0,
-        }}
-        className={
-          "min-w-max rounded-full bg-neutral-200 px-2 py-2 text-xs whitespace-nowrap text-white"
-        }
-      >
-        {title || `William Shakespeare`}
-      </motion.div>
+      {children}
     </motion.div>
   );
-};
+}

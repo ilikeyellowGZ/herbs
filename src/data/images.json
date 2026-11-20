@@ -166,5 +166,29 @@
     "width": 1672,
     "height": 941,
     "alt": "Hands gathering fresh moringa leaves into a woven basket."
+  },
+  "contact-tea": {
+    "src": "/images/herby-health/heroes/contact-tea-1920.webp",
+    "srcSet": "/images/herby-health/heroes/contact-tea-480.webp 480w, /images/herby-health/heroes/contact-tea-640.webp 640w, /images/herby-health/heroes/contact-tea-960.webp 960w, /images/herby-health/heroes/contact-tea-1280.webp 1280w, /images/herby-health/heroes/contact-tea-1600.webp 1600w, /images/herby-health/heroes/contact-tea-1920.webp 1920w",
+    "fallback": "/images/herby-health/heroes/contact-tea-1920.webp",
+    "width": 1942,
+    "height": 809,
+    "alt": "Two ceramic cups of hibiscus tea and a glass teapot with fresh herbs on a sunlit garden table."
+  },
+  "rituals-model": {
+    "src": "/images/herby-health/rituals/rituals-model-1536.webp",
+    "srcSet": "/images/herby-health/rituals/rituals-model-480.webp 480w, /images/herby-health/rituals/rituals-model-640.webp 640w, /images/herby-health/rituals/rituals-model-960.webp 960w, /images/herby-health/rituals/rituals-model-1280.webp 1280w, /images/herby-health/rituals/rituals-model-1536.webp 1536w",
+    "fallback": "/images/herby-health/rituals/rituals-model-1536.webp",
+    "width": 1536,
+    "height": 1024,
+    "alt": "A woman enjoying ruby-red hibiscus tea at a sunlit kitchen table beside a Herby Health Hibiscus jar."
+  },
+  "rituals-preparation": {
+    "src": "/images/herby-health/rituals/rituals-preparation-1120.webp",
+    "srcSet": "/images/herby-health/rituals/rituals-preparation-320.webp 320w, /images/herby-health/rituals/rituals-preparation-480.webp 480w, /images/herby-health/rituals/rituals-preparation-640.webp 640w, /images/herby-health/rituals/rituals-preparation-800.webp 800w, /images/herby-health/rituals/rituals-preparation-1120.webp 1120w",
+    "fallback": "/images/herby-health/rituals/rituals-preparation-1120.webp",
+    "width": 1122,
+    "height": 1402,
+    "alt": "Hands spooning dried hibiscus petals into a glass teapot beside the open Herby Health Hibiscus jar."
   }
 }

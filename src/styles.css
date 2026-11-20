@@ -198,14 +198,15 @@ button.product-card { display: flex; flex-direction: column; align-items: stretc
 
 /* Olive, botanical and typographic: a generous closing signature. */
 .site-footer { background: var(--olive); color: var(--porcelain); padding-top: 64px; padding-bottom: 24px; }
-.footer-cursor { position: fixed; left: 0; top: 0; z-index: 40; width: var(--footer-cursor-size); height: var(--footer-cursor-size); border-radius: 50%; background: var(--porcelain); color: var(--olive); display: grid; place-items: center; opacity: 0; pointer-events: none; transition: opacity 160ms ease; }
+.footer-cursor { width: var(--footer-cursor-size); height: var(--footer-cursor-size); border-radius: 50%; background: var(--porcelain); color: var(--olive); display: grid; place-items: center; pointer-events: none; transform: translate(-50%, -50%); }
 .footer-cursor svg { width: 32px; height: 40px; }
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  .footer-cursor.is-visible { opacity: 1; will-change: transform; }
-  .has-footer-cursor, .has-footer-cursor * { cursor: none; }
+  .following-pointer { will-change: transform; }
 }
 
 .destination-page { padding-top: 100px; min-height: 70svh; }
+.contact-hero { aspect-ratio: 1942 / 809; overflow: hidden; }
+.contact-hero img { object-position: 60% center; }
 .home-destinations { padding-block: 100px; max-width: 1200px; margin-inline: auto; }
 .home-destinations h2 { font-size: clamp(40px, 4.2vw, 64px); line-height: 1.1; margin: 20px 0 48px; }
 .destination-links { border-top: 1px solid var(--rule); }
@@ -215,6 +216,7 @@ button.product-card { display: flex; flex-direction: column; align-items: stretc
 .destination-links > a:hover .destination-title { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
 @media (max-width: 640px) {
   .destination-page { padding-top: 84px; }
+  .contact-hero { aspect-ratio: 4 / 3; }
   .home-destinations { padding-block: 64px; }
 }
 .footer-top { display: grid; grid-template-columns: 1fr 1.5fr 1fr; align-items: start; gap: 48px; }
