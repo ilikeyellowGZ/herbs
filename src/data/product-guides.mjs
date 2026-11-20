@@ -1,5 +1,6 @@
 const dryStorage = 'Keep tightly closed in a cool, dry place, away from sunlight and moisture. Use a clean, dry utensil and follow the storage and best-before instructions on the supplied pack.';
 
+/** @type {Record<string, { collection: string, summary: string, benefits: string[], evidence: string, preparation: string, suitability: string, storage: string, sources: {label: string, url: string}[] }>} */
 export const productGuides = {
   hibiscus: {
     collection: 'tea',

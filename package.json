@@ -14,15 +14,19 @@
     "@fontsource/dm-sans": "^5.2.8",
     "@fontsource/instrument-serif": "^5.2.8",
     "@gsap/react": "^2.1.2",
+    "clsx": "^2.1.1",
     "framer-motion": "^12.23.24",
     "gsap": "^3.13.0",
     "lucide-react": "^0.468.0",
+    "motion": "^14.14.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-router-dom": "^7.9.6"
+    "react-router-dom": "^7.9.6",
+    "tailwind-merge": "^3.7.1"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
+    "@tailwindcss/vite": "^4.3.5",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "@vitejs/plugin-react": "^5.1.1",
@@ -31,6 +35,7 @@
     "react-doctor": "latest",
     "react-grab": "latest",
     "react-scan": "latest",
+    "tailwindcss": "^4.3.5",
     "typescript": "~5.9.3",
     "vite": "^7.2.2"
   }

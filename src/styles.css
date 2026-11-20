@@ -1,4 +1,19 @@
 @import url('./tokens.css');
+@layer theme, base, components, utilities;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+@theme inline {
+  --color-background: var(--garden);
+  --color-foreground: var(--olive);
+  --color-primary: var(--olive);
+  --color-primary-foreground: var(--porcelain);
+  --color-muted: var(--garden);
+  --color-muted-foreground: var(--olive);
+  --color-border: var(--rule);
+  --font-sans: var(--sans);
+  --font-serif: var(--serif);
+}
 
 @font-face { font-family: 'Instrument Serif'; src: url('/fonts/instrument-serif.woff2') format('woff2'); font-style: normal; font-weight: 400; font-display: swap; }
 @font-face { font-family: 'Instrument Serif'; src: url('/fonts/instrument-serif-italic.woff2') format('woff2'); font-style: italic; font-weight: 400; font-display: swap; }

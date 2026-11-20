@@ -27,7 +27,7 @@ export default function CatalogueBrowser() {
   const pricesAvailable = products.some(hasPrice);
   const requestedSort = params.get('sort') || 'featured';
   const sort = sortOptions.some(item => item.value === requestedSort) && (pricesAvailable || !requestedSort.startsWith('price')) ? requestedSort : 'featured';
-  const visible = queryProducts(products, { query, category, sort });
+  const visible: Product[] = queryProducts(products, { query, category, sort });
   const filtered = Boolean(query || category !== 'all');
 
   function updateParam(key: string, value: string, replace = false) {

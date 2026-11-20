@@ -13,9 +13,9 @@ const ingredients = [
 
 export const products = ingredients.map(product => ({
   ...product,
-  price: null,
-  currency: null,
-  packSize: null,
+  price: /** @type {number | null} */ (null),
+  currency: /** @type {string | null} */ (null),
+  packSize: /** @type {string | null} */ (null),
   collection: productGuides[product.slug].collection,
   guide: productGuides[product.slug],
 }));
