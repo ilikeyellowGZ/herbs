@@ -1,6 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, rm } from 'node:fs/promises';
+import { mkdtemp, rm, readdir } from 'node:fs/promises';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+import { DatabaseSync } from 'node:sqlite';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createApp } from '../server/app.mjs';
@@ -52,6 +55,8 @@ test('persistent API protects owner data and connects commerce and inbox', async
       assert.equal((await request('/api/orders', 'POST', { ...payload, items: [{ slug: 'hibiscus', quantity: 1 }] }, false, { 'Idempotency-Key': 'test-request-idempotency-123' })).response.status, 409);
       assert.equal((await request('/api/orders', 'POST', payload, false, { 'Idempotency-Key': 'test-request-oversell-123' })).response.status, 409);
       assert.equal((await request('/api/orders', 'POST', { ...payload, items: [{ slug: 'unknown', quantity: 1 }] }, false, { 'Idempotency-Key': 'test-request-unknown-1234' })).response.status, 400);
+      assert.equal((await request('/api/orders', 'POST', { details, method: 'courier' }, false, { 'Idempotency-Key': 'test-malformed-body-1234' })).response.status, 400);
+      assert.equal((await request('/api/orders', 'POST', { ...payload, details: { ...details, name: { bad: 'type' } } }, false, { 'Idempotency-Key': 'test-malformed-name-1234' })).response.status, 400);
       assert.equal((await request('/api/orders', 'POST', { ...payload, items: [{ slug: 'collagen', quantity: 1 }], expectedTotal: 1 }, false, { 'Idempotency-Key': 'test-request-price-12345' })).response.status, 409);
     });
     await t.test('cancellation restores reserved stock only once and data survives reopen', async () => {
@@ -92,5 +97,12 @@ test('persistent API protects owner data and connects commerce and inbox', async
   } finally { await new Promise(resolve => server.close(resolve)); db.close(); }
   const reopened = await createApp({ dataDir: directory, origin: 'http://localhost:5174' });
   assert.equal(reopened.db.prepare('SELECT COUNT(*) AS count FROM orders').get().count, 1);
-  reopened.db.close(); await rm(directory, { recursive: true, force: true });
+  reopened.db.close();
+  await promisify(execFile)(process.execPath, ['server/backup.mjs'], { env: { ...process.env, DATA_DIR: directory } });
+  const backups = await readdir(join(directory, 'backups'));
+  const backupDb = new DatabaseSync(join(directory, 'backups', backups[0], 'herby.sqlite'));
+  assert.equal(backupDb.prepare('SELECT COUNT(*) AS count FROM orders').get().count, 1);
+  assert.equal(backupDb.prepare('SELECT COUNT(*) AS count FROM attachments').get().count, 1);
+  const backedFiles = await readdir(join(directory, 'backups', backups[0], 'uploads')); assert.equal(backedFiles.length, 1);
+  backupDb.close(); await rm(directory, { recursive: true, force: true });
 });

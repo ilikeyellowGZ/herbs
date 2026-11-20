@@ -1,6 +1,6 @@
 import { randomBytes, randomUUID, scrypt as scryptCallback, timingSafeEqual, createHash } from 'node:crypto';
 import { promisify } from 'node:util';
-import { activity } from './database.mjs';
+import { activity, transaction } from './database.mjs';
 const scrypt = promisify(scryptCallback);
 export const digest = value => createHash('sha256').update(value).digest('hex');
 export async function hashPassword(password) {
@@ -20,7 +20,7 @@ export async function createOwner(db, email, password, { replace = false } = {})
   const existing = db.prepare('SELECT id FROM users WHERE email=?').get(email);
   if (existing && !replace) return;
   const hash = await hashPassword(password);
-  if (existing) { db.prepare('UPDATE users SET password_hash=? WHERE id=?').run(hash, existing.id); db.prepare('DELETE FROM sessions WHERE user_id=?').run(existing.id); }
+  if (existing) transaction(db, () => { db.prepare('UPDATE users SET password_hash=? WHERE id=?').run(hash, existing.id); db.prepare('DELETE FROM sessions WHERE user_id=?').run(existing.id); });
   else db.prepare('INSERT INTO users (id,email,password_hash,created_at) VALUES (?,?,?,?)').run(randomUUID(), email, hash, new Date().toISOString());
   activity(db, email, existing ? 'Reset owner password' : 'Created owner account', 'Owner access');
 }

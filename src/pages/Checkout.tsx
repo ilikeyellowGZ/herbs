@@ -6,6 +6,7 @@ import CartItems from '../components/CartItems';
 import { money, orderRequest, provinces, validateCheckout } from '../data/shopping.mjs';
 import { useStore } from '../components/StoreContext';
 import { api, json } from '../lib/api';
+import { orderSubmissionKey, clearOrderSubmission } from '../lib/order-submission';
 
 type Details = { name: string; email: string; phone: string; address: string; city: string; province: string; postalCode: string; notes: string };
 const initialDetails: Details = { name: '', email: '', phone: '', address: '', city: '', province: '', postalCode: '', notes: '' };
@@ -16,7 +17,6 @@ export default function Checkout() {
   const [busy, setBusy] = useState(false);
   const [submissionError, setSubmissionError] = useState('');
   const [placed, setPlaced] = useState<{ reference: string; total: number } | null>(null);
-  const submission = useRef({ fingerprint: '', key: '' });
   const [details, setDetails] = useState<Details>(initialDetails);
   const [method, setMethod] = useState<'courier' | 'collection'>('courier');
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -37,11 +37,10 @@ export default function Checkout() {
     if (busy || placed) return;
     setBusy(true); setSubmissionError('');
     const payload = { items: cart, details, method, expectedTotal: summary.total };
-    const fingerprint = JSON.stringify(payload);
-    if (submission.current.fingerprint !== fingerprint) submission.current = { fingerprint, key: crypto.randomUUID() };
     try {
-      const result = await api<{ reference: string; total: number }>('/orders', { ...json('POST', payload), headers: { 'Idempotency-Key': submission.current.key } });
-      setPlaced(result); clear(); void refresh();
+      const key = await orderSubmissionKey(payload);
+      const result = await api<{ reference: string; total: number }>('/orders', { ...json('POST', payload), headers: { 'Idempotency-Key': key } });
+      setPlaced(result); clearOrderSubmission(); clear(); void refresh();
     } catch (e) { setSubmissionError((e as Error).message); await refresh(); } finally { setBusy(false); }
   }
 

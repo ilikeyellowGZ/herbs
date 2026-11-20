@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Download, Leaf, RefreshCw, Search, X } from 'lucide-react';
 import { api } from '../lib/api';
 export function useResource<T>(path: string) {
@@ -20,7 +20,7 @@ export function Feedback({ error, loading, retry }: { error: string; loading: bo
   return loading ? <p role="status" className="admin-loading">Loading your workspace…</p> : null;
 }
 export function exportCsv(filename: string, headings: string[], rows: unknown[][]) {
-  const cell = (value: unknown) => { const s = String(value ?? ''); return `"${(/^[=+\-@\t\r]/.test(s) ? "'" + s : s).replaceAll('"', '""')}"`; };
+  const cell = (value: unknown) => { const s = String(value ?? ''); return `"${(/^(?:\s*[=+\-@]|[\t\r\n])/.test(s) ? "'" + s : s).replaceAll('"', '""')}"`; };
   const blob = new Blob(['\uFEFF' + [headings, ...rows].map(row => row.map(cell).join(',')).join('\r\n')], { type: 'text/csv;charset=utf-8' });
   const href = URL.createObjectURL(blob), link = document.createElement('a'); link.href = href; link.download = filename; link.click(); setTimeout(() => URL.revokeObjectURL(href), 1000);
 }
@@ -29,5 +29,12 @@ export function Toolbar({ query, onQuery, placeholder, count, refresh, exporting
 }
 export function Table({ children, name }: { children: ReactNode; name: string }) { return <div className="admin-table-scroll" role="region" aria-label={name} tabIndex={0}><table className="admin-table">{children}</table></div>; }
 export function Detail({ title, close, children }: { title: string; close: () => void; children: ReactNode }) {
-  return <section className="admin-detail" aria-label={title}><div className="admin-panel-heading"><h2>{title}</h2><button className="admin-icon-button" aria-label="Close details" onClick={close}><X size={20} /></button></div>{children}</section>;
+  const heading = useRef<HTMLHeadingElement>(null);
+  useEffect(() => {
+    const opener = document.activeElement as HTMLElement | null;
+    heading.current?.focus({ preventScroll: true });
+    if (window.matchMedia('(max-width: 1360px)').matches) heading.current?.closest('section')?.scrollIntoView({ behavior: 'instant', block: 'start' });
+    return () => { if (opener?.isConnected) opener.focus({ preventScroll: true }); };
+  }, [title]);
+  return <section className="admin-detail" aria-label={title}><div className="admin-panel-heading"><h2 ref={heading} tabIndex={-1}>{title}</h2><button type="button" className="admin-icon-button" aria-label="Close details" onClick={close}><X size={20} /></button></div>{children}</section>;
 }

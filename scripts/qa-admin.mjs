@@ -27,6 +27,15 @@ async function fits(page, name) {
   assert.ok(overflow.scrollWidth <= overflow.width, `Page overflows: ${name}`);
 }
 async function settled(page) { await page.locator('.site-loader').waitFor({ state: 'hidden' }); }
+async function fillCheckout(page, width) {
+  await page.getByLabel('Full name', { exact: true }).fill(`Browser Customer ${width}`);
+  await page.getByLabel('Email address', { exact: true }).fill(`customer-${width}@example.com`);
+  await page.getByLabel('Phone number', { exact: true }).fill('0821234567');
+  await page.getByLabel('Street address & unit', { exact: true }).fill('12 Garden Road');
+  await page.getByLabel('Town / city', { exact: true }).fill('Johannesburg');
+  await page.getByLabel('Province', { exact: true }).selectOption('Gauteng');
+  await page.getByLabel('Postal code', { exact: true }).fill('2000');
+}
 try {
   for (const width of [375, 768, 1280]) {
     const context = await browser.newContext({ viewport: { width, height: 900 }, reducedMotion: 'reduce', acceptDownloads: true });
@@ -52,7 +61,7 @@ try {
     await page.goto(base + '/admin/products', { waitUntil: 'networkidle' });
     await page.getByRole('button', { name: 'Edit Hibiscus', exact: true }).click();
     await page.getByLabel('Price (ZAR)', { exact: true }).fill('110');
-    await page.getByLabel('Units in stock', { exact: true }).fill('10');
+    await page.getByLabel('Units in stock').fill('10');
     await page.getByRole('button', { name: 'Save ingredient', exact: true }).click();
     await page.getByRole('button', { name: 'Save ingredient', exact: true }).waitFor({ state: 'detached' });
     await page.getByRole('button', { name: 'Edit Hibiscus', exact: true }).click();
@@ -68,19 +77,32 @@ try {
     assert.match(await page.locator('.product-details .catalogue-price').textContent(), /110/);
     await page.getByRole('button', { name: 'Add Hibiscus to bag', exact: true }).click();
     await page.goto(base + '/checkout', { waitUntil: 'networkidle' }); await settled(page);
-    await page.getByLabel('Full name', { exact: true }).fill(`Browser Customer ${width}`);
-    await page.getByLabel('Email address', { exact: true }).fill(`customer-${width}@example.com`);
-    await page.getByLabel('Phone number', { exact: true }).fill('0821234567');
-    await page.getByLabel('Street address & unit', { exact: true }).fill('12 Garden Road');
-    await page.getByLabel('Town / city', { exact: true }).fill('Johannesburg');
-    await page.getByLabel('Province', { exact: true }).selectOption('Gauteng');
-    await page.getByLabel('Postal code', { exact: true }).fill('2000');
+    await fillCheckout(page, width);
     await page.getByRole('button', { name: 'Review order', exact: true }).click();
-    assert.match(await page.locator('.shopping-total dd').textContent(), /195/);
+    assert.match(await page.locator('.checkout-summary .shopping-total dd').textContent(), /195/);
     await fits(page, `checkout review ${width}`); await accessible(page, `checkout review ${width}`);
     await page.screenshot({ path: `artifacts/admin/checkout-${width}.png`, fullPage: true });
+    const beforeOrders = db.prepare('SELECT COUNT(*) AS count FROM orders').get().count;
+    if (width === 375) {
+      // Let the server commit the order, then drop its response before the browser receives it.
+      let dropped = false;
+      await page.route('**/api/orders', async route => {
+        const response = await route.fetch();
+        if (!dropped) { dropped = true; await route.abort('failed'); } else await route.fulfill({ response });
+      });
+      await page.getByRole('button', { name: 'Submit order request', exact: true }).click();
+      await page.locator('.checkout-review .field-error').waitFor();
+      assert.equal(db.prepare('SELECT COUNT(*) AS count FROM orders').get().count, beforeOrders + 1);
+      const attempt = await page.evaluate(() => sessionStorage.getItem('herby-order-attempt'));
+      assert.ok(attempt && !attempt.includes('customer-375') && !attempt.includes('Garden Road'));
+      await page.reload({ waitUntil: 'networkidle' }); await settled(page);
+      await fillCheckout(page, width);
+      await page.getByRole('button', { name: 'Review order', exact: true }).click();
+    }
     await page.getByRole('button', { name: 'Submit order request', exact: true }).click();
     await page.getByRole('heading', { name: 'Your request is with us.', exact: true }).waitFor();
+    assert.equal(db.prepare('SELECT COUNT(*) AS count FROM orders').get().count, beforeOrders + 1, 'Retry must not create another order');
+    assert.equal(await page.evaluate(() => sessionStorage.getItem('herby-order-attempt')), null);
     const reference = await page.locator('.checkout-empty strong').textContent(); assert.match(reference, /^HH-/);
     await page.goto(base + '/contact', { waitUntil: 'networkidle' }); await settled(page);
     await page.getByLabel('First name', { exact: true }).fill('Browser');
@@ -99,6 +121,7 @@ try {
     await page.getByRole('button', { name: reference, exact: true }).click();
     await page.getByLabel('Order status', { exact: true }).selectOption('confirmed');
     await page.getByRole('button', { name: 'Save order', exact: true }).click();
+    await page.waitForFunction(() => [...document.querySelectorAll('.admin-detail select option')].some(option => option.value === 'fulfilled'));
     await page.getByLabel('Order status', { exact: true }).selectOption('fulfilled');
     await page.getByRole('button', { name: 'Save order', exact: true }).click();
     await page.getByText('Fulfilled', { exact: true }).first().waitFor();

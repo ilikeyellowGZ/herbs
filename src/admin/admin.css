@@ -92,6 +92,7 @@
 .admin-detail-body { padding: 24px; font-size: 14px; overflow-wrap: anywhere; }
 .admin-detail-body h3 { font: 500 14px/1.4 var(--sans); margin-block: 24px 8px; }
 .admin-detail-body p { font-size: 14px; }
+.admin-detail-body a[href^="tel:"] { display: inline-flex; min-height: 44px; align-items: center; }
 .admin-preserve { white-space: pre-wrap; overflow-wrap: anywhere; }
 .admin-order-items { padding: 0; margin: 16px 0; list-style: none; }
 .admin-order-items li { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--rule); }
