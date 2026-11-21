@@ -55,7 +55,7 @@ export default function Checkout() {
       const key = await orderSubmissionKey(payload);
       const result = await api<{ id: string; reference: string; total: number; paymentToken: string; paymentReady: boolean; paymentMode: 'test' | 'live'; emailReady?: boolean }>('/orders', { ...json('POST', payload), headers: { 'Idempotency-Key': key } });
       if (result.paymentReady) {
-        const saved = { orderId: result.id, token: result.paymentToken, orderReference: result.reference, total: result.total, mode: result.paymentMode, items: cart.map(item => ({ ...item })) };
+        const saved = { orderId: result.id, token: result.paymentToken, orderReference: result.reference, total: result.total, mode: result.paymentMode, items: cart.map(item => ({ ...item })), submissionKey: key };
         savePaymentSession(saved); setPendingPayment(saved);
         await beginPayment(saved);
       } else { setPlaced({ ...result, emailReady: integrations.emailEnabled }); clearOrderSubmission(); clear(); void refresh(); }

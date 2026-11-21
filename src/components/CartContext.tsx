@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { CART_KEY, MAX_QUANTITY, cartSummary, changeQuantity, normaliseCart } from '../data/shopping.mjs';
+import { CART_KEY, MAX_QUANTITY, cartSummary, changeQuantity, normaliseCart, consumePurchasedItems } from '../data/shopping.mjs';
 import { useStore } from './StoreContext';
 
 export type CartEntry = { slug: string; quantity: number };
@@ -8,6 +8,7 @@ type CartContextValue = {
   setOpen: (value: boolean) => void; add: (slug: string, quantity?: number) => void;
   setQuantity: (slug: string, quantity: number) => void;
   clear: () => void;
+  consume: (items: CartEntry[]) => void;
   summarise: (method?: string) => ReturnType<typeof cartSummary>;
 };
 const CartContext = createContext<CartContextValue | null>(null);
@@ -45,9 +46,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
   const setQuantity = useCallback((slug: string, quantity: number) => setCart(previous => changeQuantity(previous, slug, quantity)), []);
   const clear = useCallback(() => setCart([]), []);
+  const consume = useCallback((items: CartEntry[]) => setCart(previous => consumePurchasedItems(previous, items)), []);
   const summarise = useCallback((method = 'courier') => cartSummary(cart, method, products, settings), [cart, products, settings]);
   const count = useMemo(() => cartSummary(cart).count, [cart]);
-  const value = useMemo(() => ({ cart, ready, count, open, notice, storageError, setOpen, add, setQuantity, clear, summarise }), [cart, ready, count, open, notice, storageError, add, setQuantity, clear, summarise]);
+  const value = useMemo(() => ({ cart, ready, count, open, notice, storageError, setOpen, add, setQuantity, clear, consume, summarise }), [cart, ready, count, open, notice, storageError, add, setQuantity, clear, consume, summarise]);
   return <CartContext.Provider value={value}>{children}<div className={`cart-notice ${notice ? 'cart-notice--visible' : ''}`} role="status" aria-live="polite">{notice}</div></CartContext.Provider>;
 }
 

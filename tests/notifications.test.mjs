@@ -8,6 +8,26 @@ import { createNotifications } from '../server/notifications.mjs';
 import { integrationConfig } from '../server/providers.mjs';
 
 const sample = { enquiry: { id: 'example', reference: 'HE-TEST', name: 'Ada', surname: 'Lovelace', email: 'ada@example.com', message: 'A question about tea.' } };
+test('a stale worker cannot overwrite a newer accepted send after its lease expires', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'herby-mail-')), db = openDatabase(directory), secondDb = openDatabase(directory);
+  const config = integrationConfig('https://store.example.com', { resendKey: 're_test', emailFrom: 'orders@example.com' });
+  let rejectOld, entered;
+  const started = new Promise(resolve => { entered = resolve; });
+  const old = createNotifications(db, config, { resend: async () => { entered(); return new Promise((_resolve, reject) => { rejectOld = reject; }); } });
+  const newer = createNotifications(secondDb, config, { resend: async () => ({ id: 'accepted_once' }) });
+  try {
+    old.enqueue('enquiry-received', sample, { key: 'lease/example', recipient: 'ada@example.com' });
+    const oldProcess = old.process({ now: 1000000, limit: 1 });
+    await started;
+    await newer.process({ now: 1060001, limit: 1 });
+    rejectOld(new Error('Delayed transport failure'));
+    await oldProcess;
+    assert.equal(newer.list()[0].state, 'sent');
+    assert.equal(newer.list()[0].providerId, 'accepted_once');
+    await newer.process({ now: 200000000, limit: 1 });
+    assert.equal(newer.list()[0].attempts, 2);
+  } finally { secondDb.close(); db.close(); await rm(directory, { recursive: true, force: true }); }
+});
 test('durable outbox deduplicates events, retries exact payloads and separates accepted from delivered', async () => {
   const directory = await mkdtemp(join(tmpdir(), 'herby-mail-')), db = openDatabase(directory);
   let fail = true; const calls = [];

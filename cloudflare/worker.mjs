@@ -52,6 +52,8 @@ export class HerbyStore extends DurableObject {
       this.app = application.app;
       this.notifications = application.notifications;
       this.emailEnabled = application.config.emailEnabled;
+      this.payments = application.payments;
+      this.paymentsEnabled = application.config.paystackEnabled;
       await this.scheduleNotifications();
     });
   }
@@ -92,17 +94,18 @@ export class HerbyStore extends DurableObject {
   }
 
   async scheduleNotifications() {
-    if (!this.emailEnabled) return;
-    const row = this.db.prepare("SELECT MIN(CASE WHEN next_attempt_at>locked_until THEN next_attempt_at ELSE locked_until END) AS due FROM email_outbox WHERE state IN ('queued','retry','blocked','sending')").get();
-    if (row?.due === null || row?.due === undefined) return;
-    const due = Math.max(Date.now() + 1000, row.due);
+    const row = this.emailEnabled ? this.db.prepare("SELECT MIN(CASE WHEN next_attempt_at>locked_until THEN next_attempt_at ELSE locked_until END) AS due FROM email_outbox WHERE provider_id IS NULL AND state IN ('queued','retry','blocked','sending')").get() : null;
+    const refunds = this.paymentsEnabled ? this.db.prepare('SELECT MIN(next_attempt_at) AS due FROM refund_reconciliation').get() : null;
+    const candidates = [row?.due, refunds?.due].filter(value => value !== null && value !== undefined);
+    if (!candidates.length) return;
+    const due = Math.max(Date.now() + 1000, Math.min(...candidates));
     const current = await this.ctx.storage.getAlarm();
     if (current === null || current > due) await this.ctx.storage.setAlarm(due);
   }
 
   async alarm() {
-    if (!this.emailEnabled) return;
-    await this.notifications.process({ limit: 10 });
+    if (this.emailEnabled) await this.notifications.process({ limit: 1 });
+    if (this.paymentsEnabled) await this.payments.processRefunds({ limit: 1 });
     await this.scheduleNotifications();
   }
 }

@@ -41,6 +41,9 @@ test('checkout, signed payment callbacks, durable emails and owner enquiry repli
     const initial = await request('/payments/initialize', { orderId: order.value.id, token: order.value.paymentToken });
     assert.equal(initial.response.status, 200);
     const reference = initial.value.reference;
+    const localStatus = await request('/payments/status', { orderId: order.value.id, token: order.value.paymentToken });
+    assert.equal(localStatus.value.reference, reference);
+    assert.equal(localStatus.value.payment, 'unpaid');
     assert.equal((await request('/payments/verify', { reference, token: 'forged-token-that-is-long-enough-1234' })).response.status, 403);
     const payload = JSON.stringify({ event: 'charge.success', data: transactions.get(reference) });
     const timestamp = Math.floor(Date.now() / 1000), signature = `t=${timestamp},v1=whk_test:${createHmac('sha512', webhookSecret).update(`${timestamp}.`).update(payload).digest('hex')}`;

@@ -8,6 +8,11 @@ export const provinces = ['Eastern Cape', 'Free State', 'Gauteng', 'KwaZulu-Nata
 const currencyFormat = new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' });
 export const money = cents => currencyFormat.format(cents / 100);
 
+export function consumePurchasedItems(cart, purchased) {
+  const quantities = new Map(normaliseCart(purchased).map(item => [item.slug, item.quantity]));
+  return normaliseCart(cart).map(item => ({ ...item, quantity: item.quantity - (quantities.get(item.slug) || 0) })).filter(item => item.quantity > 0);
+}
+
 export function normaliseCart(value) {
   /** @type {{slug: string, quantity: number}[]} */
   const clean = [];

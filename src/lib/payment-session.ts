@@ -1,4 +1,4 @@
-export type PaymentSession = { orderId: string; token: string; orderReference: string; total: number; reference?: string; settled?: boolean; closed?: boolean; items?: { slug: string; quantity: number }[]; mode: 'test' | 'live' };
+export type PaymentSession = { orderId: string; token: string; orderReference: string; total: number; reference?: string; settled?: boolean; closed?: boolean; submissionKey?: string; items?: { slug: string; quantity: number }[]; mode: 'test' | 'live' };
 const key = 'herby-payment-recovery-v1';
 let current: PaymentSession | null = null;
 export function readPaymentSession(): PaymentSession | null {

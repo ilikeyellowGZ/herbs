@@ -1,7 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { products } from '../src/data/catalogue.mjs';
-import { normaliseCart, changeQuantity, cartSummary, validateCheckout, orderRequest } from '../src/data/shopping.mjs';
+import { normaliseCart, changeQuantity, cartSummary, validateCheckout, orderRequest, consumePurchasedItems } from '../src/data/shopping.mjs';
+
+test('payment completion removes only the purchased quantities and preserves later additions', () => {
+  assert.deepEqual(consumePurchasedItems([{ slug: 'hibiscus', quantity: 3 }, { slug: 'moringa', quantity: 1 }], [{ slug: 'hibiscus', quantity: 2 }]), [{ slug: 'hibiscus', quantity: 1 }, { slug: 'moringa', quantity: 1 }]);
+  assert.deepEqual(consumePurchasedItems([{ slug: 'hibiscus', quantity: 1 }], [{ slug: 'hibiscus', quantity: 2 }]), []);
+  assert.deepEqual(consumePurchasedItems([{ slug: 'moringa', quantity: 1 }], []), [{ slug: 'moringa', quantity: 1 }]);
+});
 
 test('stored cart rejects unknown products, invalid quantities and untrusted prices', () => {
   assert.deepEqual(normaliseCart(null), []);

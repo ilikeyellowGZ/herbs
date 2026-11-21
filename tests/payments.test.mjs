@@ -143,6 +143,20 @@ test('a refund signal retries until the provider list reflects the processed sta
   assert.equal(db.prepare('SELECT payment FROM orders').get().payment, 'refunded');
 }));
 
+test('an ambiguous equal partial refund is reconciled later without needing another webhook', async () => fixture(async ({ service, order, key, db, setResult, events }) => {
+  const token = service.access(order.id, key), { reference } = await service.initialise(order.id, token);
+  service.settle({ id: 600, status: 'success', reference, domain: 'test', amount: 26500, currency: 'ZAR', customer: { email: details.email } });
+  const first = { id: 501, transaction: 600, amount: 5000, currency: 'ZAR', domain: 'test', status: 'processed' };
+  const signal = { event: 'refund.processed', data: { transaction_reference: reference, refund_reference: null, amount: '5000', currency: 'ZAR', domain: 'test' } };
+  setResult([first]); await service.webhook(signal);
+  await service.webhook(signal); // The second refund is still absent from the provider list.
+  assert.equal(db.prepare('SELECT refunded FROM payment_attempts').get().refunded, 5000);
+  setResult([first, { ...first, id: 502 }]);
+  await service.processRefunds({ now: Date.now() + 61000 });
+  assert.equal(db.prepare('SELECT refunded FROM payment_attempts').get().refunded, 10000);
+  assert.equal([...events.values()].filter(event => event.type === 'refund-received').length, 2);
+}));
+
 test('access uses the imported database secret after host setup', async () => fixture(async ({ service, order, key, db, config, providers, notifications }) => {
   db.prepare("UPDATE integration_secrets SET value=? WHERE name='payment-access'").run('ba'.repeat(32));
   const token = service.access(order.id, key);

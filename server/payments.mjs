@@ -36,6 +36,7 @@ function requirePayable(order) {
 
 export function createPayments(db, config, providers, notifications) {
   const initializing = new Map();
+  let refundTimer, refundWork;
   const readOrder = id => mapOrder(db.prepare('SELECT * FROM orders WHERE id=?').get(id));
   const byReference = reference => typeof reference === 'string' && db.prepare('SELECT * FROM payment_attempts WHERE reference=?').get(reference);
   const requireEnabled = () => { if (!config.paystackEnabled) fail('Online payment is not configured. Your order is saved.', 503); };
@@ -131,6 +132,7 @@ export function createPayments(db, config, providers, notifications) {
           'Payment arrived after cancellation. Review this payment in Paystack and contact the customer.');
       } else {
         notify(state === 'pending' ? 'payment-pending' : 'payment-failed', order, payment, attempt.reference + '/' + state);
+        notify('owner-payment', order, payment, attempt.reference + '/' + state);
       }
       return view(byReference(attempt.reference));
     });
@@ -187,6 +189,8 @@ export function createPayments(db, config, providers, notifications) {
         if (status === 'failed') notify('refund-failed', order, payment, attempt.reference + '/' + id);
         notify('owner-alert', order, payment, 'refund/' + attempt.reference + '/' + id + '/' + status,
           status === 'failed' ? 'The refund failed. Review it in Paystack and contact the customer.' : 'Paystack needs more information to process this refund. Review it in the dashboard.');
+      } else {
+        notify('owner-payment', order, payment, 'refund/' + attempt.reference + '/' + id + '/' + status, 'A refund is awaiting provider confirmation. No completed refund has been recorded yet.');
       }
       return view(byReference(attempt.reference));
     });
@@ -231,11 +235,33 @@ export function createPayments(db, config, providers, notifications) {
         if (!refundStateCaughtUp(canonical.status, type.slice(7))) fail('The refund is awaiting confirmation from the provider.', 503);
       } else {
         if (!data?.transaction_reference) mismatch();
+        const attempt = byReference(data.transaction_reference);
+        if (attempt) {
+          const timestamp = Date.now();
+          db.prepare('INSERT INTO refund_reconciliation (reference,payload,next_attempt_at,until_at) VALUES (?,?,?,?) ON CONFLICT(reference) DO UPDATE SET payload=excluded.payload,next_attempt_at=excluded.next_attempt_at,until_at=excluded.until_at').run(attempt.reference, JSON.stringify({ data, announced: type.slice(7) }), timestamp + 60000, timestamp + 72 * 3600000);
+        }
         await reconcileRefunds(data, type.slice(7));
       }
     }
     return { ok: true };
   }
 
-  return { access, authorise, initialise, verify, settle, refund, webhook };
+  async function reconcileJobs({ now: timestamp = Date.now(), limit = 2 } = {}) {
+    for (const job of db.prepare('SELECT * FROM refund_reconciliation WHERE next_attempt_at<=? ORDER BY next_attempt_at LIMIT ?').all(timestamp, limit)) {
+      let error = '';
+      try { const payload = JSON.parse(job.payload); await reconcileRefunds(payload.data, payload.announced); }
+      catch { error = 'Refund provider records are not yet available. Reconciliation will retry.'; }
+      const attempt = byReference(job.reference);
+      if (attempt?.refunded >= attempt?.amount) db.prepare('DELETE FROM refund_reconciliation WHERE reference=?').run(job.reference);
+      else if (timestamp >= job.until_at) transaction(db, () => {
+        const removed = db.prepare('DELETE FROM refund_reconciliation WHERE reference=? AND until_at=?').run(job.reference, job.until_at);
+        if (removed.changes && attempt) notify('owner-alert', readOrder(attempt.order_id), {}, 'refund-reconciliation/' + job.reference, 'Automatic refund follow-up reached its reconciliation window. Review the provider refund records for this order.');
+      });
+      else db.prepare('UPDATE refund_reconciliation SET next_attempt_at=?,last_error=? WHERE reference=? AND until_at=?').run(timestamp + 60000, error, job.reference, job.until_at);
+    }
+  }
+  function processRefunds(options) { if (!refundWork) refundWork = reconcileJobs(options).finally(() => { refundWork = null; }); return refundWork; }
+  function start() { if (!refundTimer && config.paystackEnabled) { refundTimer = setInterval(() => { void processRefunds().catch(() => {}); }, 60000); refundTimer.unref(); } }
+  async function stop() { clearInterval(refundTimer); refundTimer = null; if (refundWork) await refundWork; }
+  return { access, authorise, initialise, verify, settle, refund, webhook, processRefunds, start, stop };
 }

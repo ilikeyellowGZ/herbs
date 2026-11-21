@@ -10,4 +10,8 @@ export async function orderSubmissionKey(payload: unknown) {
   try { sessionStorage.setItem(storageKey, JSON.stringify(memory)); } catch { /* Storage is optional. */ }
   return memory!.key;
 }
-export function clearOrderSubmission() { memory = null; try { sessionStorage.removeItem(storageKey); } catch { /* Storage is optional. */ } }
+export function clearOrderSubmission(expectedKey?: string) {
+  if (!expectedKey) { memory = null; try { sessionStorage.removeItem(storageKey); } catch { /* Storage is optional. */ } return; }
+  if (memory?.key === expectedKey) memory = null;
+  try { if (JSON.parse(sessionStorage.getItem(storageKey) || 'null')?.key === expectedKey) sessionStorage.removeItem(storageKey); } catch { /* Storage is optional. */ }
+}

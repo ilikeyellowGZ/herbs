@@ -64,6 +64,12 @@ test('enquiry replies preserve the explicit reply and line breaks, escape HTML, 
   assert.doesNotMatch(result.html + result.text, /First question|SECRET/);
 });
 
+test('manually recorded refunds do not claim provider confirmation', () => {
+  const message = renderEmail('refund-received', { order, payment: { amount: order.total, status: 'refunded', source: 'manual' } }, brand);
+  assert.match(message.text, /manually verified refund/);
+  assert.doesNotMatch(message.text, /provider has confirmed/i);
+});
+
 test('customer acknowledgement is reference-only; full enquiry is restricted to owner mail', () => {
   const secretMessage = 'Private medical question — never relay this via acknowledgement';
   const payload = { enquiry: { ...enquiry, message: secretMessage } };
