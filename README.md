@@ -30,7 +30,9 @@ Contact accepts up to five supported files of at most 10 MiB each, validates siz
 
 Copy `.env.example` to `.env.local` for local settings. `ADMIN_EMAIL` and `ADMIN_PASSWORD` optionally bootstrap the first account; they are server-only and ignored after an account exists. Prefer interactive creation and remove bootstrap credentials afterwards. Reset with `npm run admin:create -- --reset`; this revokes that owner's sessions.
 
-For production, build with `npm run build`, set `NODE_ENV=production`, set `APP_ORIGIN` to the exact public HTTPS origin, and run `npm start`. Express serves both the built app and API. Keep `HOST=127.0.0.1` behind an HTTPS reverse proxy, or use your platform's required bind address. Put `DATA_DIR` on a persistent disk outside public assets and source control. This server is intended for one Node process; ephemeral storage and multiple instances require shared storage. Static hosting alone cannot run the backend. No hosting deployment was performed.
+The complete site is hosted on Cloudflare at **https://herbs.service-heyywebb.workers.dev**, with the owner dashboard at **/admin**. Run `npm run cf:deploy` to build and publish updates without replacing live store data. See [Cloudflare hosting and recovery](docs/cloudflare.md) for storage, private owner access, local Cloudflare testing, migration backups and provider secrets.
+
+For a separate Node production server, build with `npm run build`, set `NODE_ENV=production`, set `APP_ORIGIN` to the exact public HTTPS origin, and run `npm start`. Express serves both the built app and API. Keep `HOST=127.0.0.1` behind an HTTPS reverse proxy, or use your platform's required bind address. Put `DATA_DIR` on a persistent disk outside public assets and source control. The Node server is intended for one process; static hosting alone cannot run it. Cloudflare uses the durable storage adapters described in the hosting guide.
 
 Owner access uses scrypt hashes, hashed opaque database sessions, HttpOnly/SameSite cookies, Secure production cookies, eight-hour expiry, CSRF tokens, origin checks and request limits. API responses and owner pages are not cacheable or indexable. Limits use the direct connection address; configure proxy-aware limits before scaling behind a shared proxy.
 
@@ -111,7 +113,7 @@ python scripts/prepare-assets.py
 
 This script requires Pillow. It only organises and resizes existing images and updates the runtime manifest; it never synthesises image content. Originals retain their filenames and are not overwritten.
 
-Contact and checkout now save enquiries, private attachments and unpaid order requests through the backend described below. Card payments, WhatsApp and automated email delivery are not connected.
+Contact and checkout save enquiries, private attachments and orders. Paystack hosted payments and Resend transactional emails are implemented; account keys, a verified sending domain and public webhooks are required for live activation. See [Payments and email setup](docs/payments-email-setup.md). WhatsApp is not connected.
 
 Collection, Rituals, Our Story, Contact and FAQs have dedicated pages at `/collection`, `/rituals`, `/our-story`, `/contact` and `/faqs`. Production builds prerender these pages for direct access.
 
@@ -128,3 +130,8 @@ Run `node scripts/qa-pages.mjs` for page navigation, responsive layout, enquiry 
 Every ingredient has a quick guide and a full product page covering benefits and evidence, preparation, suitability, storage, and enquiry/delivery information. Educational content and source links live in `src/data/product-guides.mjs`. Supplier-confirmed ingredients, allergens, formats, serving directions and pack sizes must replace the corresponding enquiry guidance before a retail launch. Product pictures are concept packaging.
 
 After `npm run build`, run `npm run preview -- --port 4173` and `node scripts/qa-collection.mjs`. This checks 375/768/1280px layouts, filters, sorting, URL reload/back navigation, modal focus/Escape, enquiry preselection, eight product guides and axe accessibility. On Windows it uses the installed Edge browser; set `QA_BROWSER=chrome` for Chrome. Screenshots are written to ignored `artifacts/collection/`. Run `node scripts/audit-collection.mjs` for three mobile and desktop Lighthouse runs against the production preview.
+
+
+## Payments, invoices and transactional email
+
+Follow [the setup guide](docs/payments-email-setup.md) for Paystack and Resend environment variables, webhook URLs, test/live activation and email reliability. Dashboard ? Notifications contains provider readiness, delivery logs, retries and branded template previews; Dashboard ? Enquiries supports saved email replies. Run `npm run emails:preview` for the local email gallery and `npm run qa:payments` for the isolated fake-provider browser journey.

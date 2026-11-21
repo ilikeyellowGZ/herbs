@@ -98,6 +98,17 @@
 .checkout-review > .shopping-preview { margin-top: 16px; }
 .checkout-empty { min-height: 60svh; }
 .checkout-empty h1 { font-size: 56px; line-height: 1.05; }
+.payment-result { max-width: 800px; min-height: 56svh; margin-inline: auto; padding-block: 40px; }
+.payment-result > .eyebrow { margin-top: 24px; }
+.payment-result h1 { font-size: 64px; line-height: 1.04; letter-spacing: -.025em; margin-block: 20px 32px; }
+.payment-result > p { max-width: 65ch; margin-top: 16px; }
+.payment-result__facts { border-block: 1px solid var(--rule); margin-block: 32px; padding-block: 16px; }
+.payment-result__facts > div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; padding-block: 8px; }
+.payment-result__facts dd { margin: 0; overflow-wrap: anywhere; }
+.payment-result__actions { display: flex; align-items: center; flex-wrap: wrap; gap: 16px 24px; margin-top: 32px; }
+.payment-result__actions button { display: inline-flex; align-items: center; gap: 12px; }
+.payment-result .shopping-preview { display: flex; align-items: center; gap: 8px; }
+@media (max-width: 640px) { .payment-result { padding-block: 24px; } .payment-result h1 { font-size: 48px; } .payment-result__actions { align-items: flex-start; flex-direction: column; } .payment-result__facts > div { flex-direction: column; gap: 4px; } }
 @media (max-width: 1100px) { .checkout-layout { gap: 32px; } .checkout-summary { padding: 24px; } .checkout-summary .cart-line { grid-template-columns: 64px minmax(0, 1fr); } .checkout-summary .cart-line__image { width: 64px; height: 80px; } .checkout-summary .cart-line__end { grid-column: 2; flex-direction: row; justify-content: space-between; align-items: center; } }
 @media (max-width: 880px) { .checkout-layout { grid-template-columns: 1fr; gap: 48px; } .checkout-summary .cart-line { grid-template-columns: 80px minmax(0, 1fr) auto; } .checkout-summary .cart-line__image { width: 80px; height: 100px; } .checkout-summary .cart-line__end { grid-column: auto; flex-direction: column; align-items: flex-end; } }
 @media (max-width: 640px) {

@@ -128,7 +128,8 @@ function orderSections(type, order, payment) {
 
 export function renderEmail(type, payload = {}, brand = {}) {
   if (!Object.hasOwn(events, type)) throw new Error(`Unknown email template: ${type}`);
-  const [heading, introduction] = events[type];
+  let [heading, introduction] = events[type];
+  if (type === 'refund-received' && payload.payment?.source === 'manual') { heading = 'Refund recorded'; introduction = 'Herby Health has recorded a manually verified refund for this order. Please contact us if you need more details.'; }
   const businessName = brand.businessName || 'Herby Health';
   const isEnquiry = type.includes('enquiry');
   const enquiry = payload.enquiry || {}, order = payload.order || {};
@@ -152,6 +153,7 @@ export function renderEmail(type, payload = {}, brand = {}) {
   const html = `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escape(subject)}</title><style>@media(max-width:520px){.outer{padding:0!important}.gutter{padding-left:20px!important;padding-right:20px!important}.headline{font-size:36px!important}}</style></head>
 <body style="margin:0;padding:0;background:${garden};color:${olive};font-family:${sans}">
+<div style="display:none;font-size:1px;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;mso-hide:all">${escape([introduction || heading, identifier].filter(Boolean).join(' · '))}</div>
 <table ${layoutTable} bgcolor="${garden}"><tr><td class="outer" align="center" style="padding:32px 12px">
 <!--[if mso]><table role="presentation" width="620" cellpadding="0" cellspacing="0"><tr><td><![endif]-->
 <table ${layoutTable} bgcolor="${porcelain}" style="max-width:620px;color:${olive};text-align:left;overflow-wrap:anywhere">

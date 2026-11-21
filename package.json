@@ -11,6 +11,8 @@
     "admin:create": "node --env-file-if-exists=.env.local server/create-admin.mjs",
     "test:backend": "node --test tests/backend.test.mjs",
     "qa:admin": "node scripts/qa-admin.mjs",
+    "emails:preview": "node scripts/preview-emails.mjs",
+    "qa:payments": "node scripts/qa-payments-email.mjs",
     "backup": "node --env-file-if-exists=.env.local server/backup.mjs",
     "cf:dev": "wrangler dev --port 8787 --var APP_ORIGIN:http://localhost:8787",
     "cf:deploy": "npm run build && wrangler deploy",

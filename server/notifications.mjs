@@ -38,16 +38,17 @@ export function createNotifications(db, config, providers) {
       return { ok: true };
     });
   }
-  async function processBatch({ now = Date.now(), limit = 10 } = {}) {
+  async function processBatch({ now: clock, limit = 10 } = {}) {
     for (let i = 0; i < limit; i++) {
+      const now = clock ?? Date.now(), lease = randomUUID();
       const row = transaction(db, () => {
-        const row = db.prepare("SELECT * FROM email_outbox WHERE state IN ('queued','retry','blocked','sending') AND next_attempt_at<=? AND locked_until<=? ORDER BY rowid LIMIT 1").get(now, now);
+        const row = db.prepare("SELECT * FROM email_outbox WHERE provider_id IS NULL AND state IN ('queued','retry','blocked','sending') AND next_attempt_at<=? AND locked_until<=? ORDER BY rowid LIMIT 1").get(now, now);
         if (!row) return null;
-        db.prepare("UPDATE email_outbox SET state='sending',locked_until=? WHERE id=?").run(now + 60000, row.id);
+        db.prepare("UPDATE email_outbox SET state='sending',locked_until=?,lease_token=? WHERE id=?").run(now + 60000, lease, row.id);
         return row;
       });
       if (!row) break;
-      const update = (state, message, next = 0) => db.prepare('UPDATE email_outbox SET state=?,last_error=?,locked_until=0,next_attempt_at=? WHERE id=?').run(state, message, next, row.id);
+      const update = (state, message, next = 0) => db.prepare('UPDATE email_outbox SET state=?,last_error=?,locked_until=0,next_attempt_at=? WHERE id=? AND lease_token=? AND provider_id IS NULL').run(state, message, next, row.id, lease);
       if (row.first_attempt_at !== null && now - row.first_attempt_at >= 23 * 3600000 && !row.provider_id) { update('uncertain', 'Reconcile this attempt in Resend before sending again; the provider deduplication window has passed.'); continue; }
       let message;
       try {
@@ -58,15 +59,16 @@ export function createNotifications(db, config, providers) {
           const rendered = renderEmail(row.type, JSON.parse(row.payload), { ...JSON.parse(row.brand), ...brand() });
           const replyTo = row.type === 'owner-enquiry' ? mailbox(JSON.parse(row.payload).enquiry?.email) : brand().email;
           message = { from: config.emailFrom, to: [recipient], ...rendered, ...(mailbox(replyTo) ? { reply_to: mailbox(replyTo) } : {}) };
-          db.prepare('UPDATE email_outbox SET message=?,recipient=? WHERE id=?').run(JSON.stringify(message), recipient, row.id);
+          db.prepare('UPDATE email_outbox SET message=?,recipient=? WHERE id=? AND lease_token=?').run(JSON.stringify(message), recipient, row.id, lease);
         }
         if (!config.emailEnabled) { update('blocked', 'Resend delivery is not configured.', now + 60000); continue; }
         if (db.prepare('SELECT email FROM email_suppressions WHERE email=?').get(message.to[0].toLowerCase())) { update('suppressed', 'This recipient previously bounced or reported a message.'); continue; }
-        db.prepare('UPDATE email_outbox SET attempts=attempts+1,first_attempt_at=COALESCE(first_attempt_at,?) WHERE id=?').run(now, row.id);
+        db.prepare('UPDATE email_outbox SET attempts=attempts+1,first_attempt_at=COALESCE(first_attempt_at,?) WHERE id=? AND lease_token=?').run(now, row.id, lease);
         const result = await providers.resend(message, row.event_key);
         if (typeof result?.id !== 'string' || !result.id) throw new Error('Email provider did not return a message identifier.');
         transaction(db, () => {
-          db.prepare("UPDATE email_outbox SET state='sent',provider_id=?,sent_at=?,last_error='',locked_until=0 WHERE id=?").run(result.id, new Date().toISOString(), row.id);
+          if (db.prepare('SELECT lease_token FROM email_outbox WHERE id=?').get(row.id)?.lease_token !== lease) return;
+          db.prepare("UPDATE email_outbox SET state='sent',provider_id=?,sent_at=?,last_error='',locked_until=0 WHERE id=? AND lease_token=?").run(result.id, new Date().toISOString(), row.id, lease);
           // A delivery webhook may reach us before the API send response.
           for (const event of db.prepare('SELECT type,created_at FROM email_events WHERE provider_id=? ORDER BY created_at').all(result.id)) applyDelivery(db.prepare('SELECT * FROM email_outbox WHERE id=?').get(row.id), event.type, event.created_at);
         });

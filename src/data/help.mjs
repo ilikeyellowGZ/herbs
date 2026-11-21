@@ -3,9 +3,9 @@ export const helpTopics = [
   {
     id: 'orders', title: 'Orders & your bag', icon: 'bag',
     articles: [
-      { id: 'place-order', title: 'How do I place an order?', body: 'Choose an ingredient, add it to your bag and review delivery or collection details at checkout. Select Submit order request to save it with Herby Health. Keep the reference shown afterwards. You can also copy an order request before submitting. Checkout does not take payment.', href: '/collection', link: 'Explore the collection' },
+      { id: 'place-order', title: 'How do I place an order?', body: 'Choose an ingredient, add it to your bag and review delivery or collection details at checkout. Select Submit order request to save it with Herby Health. Keep the reference shown afterwards. You can also copy an order request before submitting. When online payment is enabled, checkout takes you to Paystack to pay securely; otherwise it saves a request for the team to confirm.', href: '/collection', link: 'Explore the collection' },
       { id: 'edit-bag', title: 'Can I change what is in my bag?', body: 'Open the shopping bag in the top navigation to change quantities or remove an ingredient. Your bag is saved in this browser so you can return to it later. It will not automatically appear on a different device.', href: '/collection', link: 'Continue browsing' },
-      { id: 'order-status', title: 'Where can I check my order status?', body: 'Send an enquiry from the contact page with your order reference to ask about its progress. We confirm payment and delivery arrangements directly. Customer tracking accounts and automatic email updates are not currently available. Do not include payment card information.', href: '/contact', link: 'Ask about an order' },
+      { id: 'order-status', title: 'Where can I check my order status?', body: 'Send an enquiry from the contact page with your order reference to ask about its progress. We confirm payment and delivery arrangements directly. Transactional email updates are sent when email delivery is configured; customer login accounts are not required. Do not include payment card information.', href: '/contact', link: 'Ask about an order' },
     ],
   },
   {
@@ -19,7 +19,7 @@ export const helpTopics = [
   {
     id: 'payment', title: 'Payment & billing', icon: 'card',
     articles: [
-      { id: 'payment-methods', title: 'How do I pay for my order?', body: 'Checkout saves an unpaid order request and does not charge you. Confirm payment arrangements directly with Herby Health using your order reference. Never enter card numbers, passwords or banking credentials in the contact form.', href: '/contact', link: 'Ask about payment' },
+      { id: 'payment-methods', title: 'How do I pay for my order?', body: 'When configured, choose Continue to Paystack after reviewing checkout. Paystack handles the payment details; our server verifies the result. The return page can check status and download an invoice. If online payment is unavailable, checkout saves an unpaid request for Herby Health to confirm. Never enter card numbers, passwords or banking credentials in the contact form.', href: '/contact', link: 'Ask about payment' },
       { id: 'prices', title: 'Are the prices final?', body: 'Current product prices and formats are shown on ingredient pages and in your bag. Checkout verifies prices and availability with the store before saving your order request. Please confirm final product labels and payment arrangements before paying.', href: '/collection', link: 'View the ingredients' },
     ],
   },

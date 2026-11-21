@@ -34,7 +34,7 @@ export default function Checkout() {
   useEffect(() => { setCopyStatus(''); setShowRequest(false); }, [cart, method]);
   useEffect(() => { if (!settings.collectionEnabled) setMethod('courier'); }, [settings.collectionEnabled]);
   useEffect(() => { if (placed) reviewHeading.current?.focus(); }, [placed]);
-  useEffect(() => { const saved = readPaymentSession(); if (saved && !saved.settled) setPendingPayment(saved); }, []);
+  useEffect(() => { const saved = readPaymentSession(); if (saved && !saved.settled && !saved.closed) setPendingPayment(saved); }, []);
 
   async function beginPayment(saved: PaymentSession) {
     const payment = await api<{ authorizationUrl: string; reference: string }>('/payments/initialize', json('POST', { orderId: saved.orderId, token: saved.token }));
@@ -55,7 +55,7 @@ export default function Checkout() {
       const key = await orderSubmissionKey(payload);
       const result = await api<{ id: string; reference: string; total: number; paymentToken: string; paymentReady: boolean; paymentMode: 'test' | 'live'; emailReady?: boolean }>('/orders', { ...json('POST', payload), headers: { 'Idempotency-Key': key } });
       if (result.paymentReady) {
-        const saved = { orderId: result.id, token: result.paymentToken, orderReference: result.reference, total: result.total, mode: result.paymentMode };
+        const saved = { orderId: result.id, token: result.paymentToken, orderReference: result.reference, total: result.total, mode: result.paymentMode, items: cart.map(item => ({ ...item })) };
         savePaymentSession(saved); setPendingPayment(saved);
         await beginPayment(saved);
       } else { setPlaced({ ...result, emailReady: integrations.emailEnabled }); clearOrderSubmission(); clear(); void refresh(); }

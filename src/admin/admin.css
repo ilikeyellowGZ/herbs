@@ -197,3 +197,33 @@
 .admin-social-settings { min-width: 0; margin: 0; padding: 0; border: 0; display: grid; gap: 16px; }
 .admin-social-settings legend { font: 400 24px/1.2 var(--serif); padding: 0; margin-bottom: 16px; }
 .admin-social-settings > p { margin: 0; font-size: var(--text-sm); }
+.admin-integration-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 24px; margin-bottom: 32px; }
+.admin-integration-card { padding: 32px; display: flex; flex-direction: column; align-items: flex-start; gap: 16px; min-width: 0; }
+.admin-integration-card h2 { font-size: 32px; line-height: 1.1; }
+.admin-integration-card p { font-size: var(--text-sm); overflow-wrap: anywhere; }
+.admin-integration-card small { font-size: var(--text-xs); overflow-wrap: anywhere; }
+.admin-integration-card code { display: block; max-width: 100%; overflow-wrap: anywhere; font-size: var(--text-xs); }
+.admin-email-library { margin-bottom: 32px; }
+.admin-email-controls { padding: 24px; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; }
+.admin-email-controls label { display: flex; flex-direction: column; gap: 8px; font-size: var(--text-sm); }
+.admin-email-controls select { background: var(--porcelain); color: var(--olive); border: 1px solid var(--rule); padding: 12px; min-height: 48px; max-width: 100%; }
+.admin-email-subject { padding: 0 24px 20px; font-size: var(--text-sm); overflow-wrap: anywhere; }
+.admin-email-subject strong { margin-right: 12px; font-weight: 500; }
+.admin-email-preview { display: block; width: 100%; height: 640px; border: 0; background: var(--garden); }
+.admin-email-text { white-space: pre-wrap; overflow-wrap: anywhere; font: 400 14px/1.7 var(--sans); padding: 24px; margin: 0; background: var(--garden); }
+.admin-email-library > .admin-footnote { padding: 16px 24px; }
+.admin-email-error { max-width: 320px; overflow-wrap: anywhere; }
+.admin-email-actions { display: flex; align-items: center; gap: 16px; }
+.admin-email-actions button { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; }
+.admin-status--delivered, .admin-status--configured { background: var(--garden); color: var(--olive); }
+.admin-status--bounced, .admin-status--complained, .admin-status--failed, .admin-status--suppressed, .admin-status--uncertain { background: var(--porcelain); color: var(--petal); }
+.admin-status--queued, .admin-status--blocked, .admin-status--test-mode { background: var(--garden); color: var(--olive); }
+.admin-replies { margin-top: 32px; border-top: 1px solid var(--rule); padding-top: 24px; }
+.admin-replies > h3 { margin-block: 0 20px; }
+.admin-replies .admin-form { padding: 0; }
+.admin-reply { background: var(--garden); padding: 20px; margin-bottom: 16px; }
+.admin-reply > div { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
+.admin-reply small { font-size: var(--text-xs); overflow-wrap: anywhere; }
+.admin-reply p { font-size: var(--text-sm); overflow-wrap: anywhere; }
+@media (max-width: 880px) { .admin-integration-grid { grid-template-columns: 1fr; } .admin-integration-card { padding: 24px; } }
+@media (max-width: 640px) { .admin-email-controls { padding: 20px; flex-direction: column; align-items: stretch; gap: 16px; } .admin-email-subject { padding-inline: 20px; } .admin-email-preview { height: 560px; } .admin-email-actions { flex-direction: column; align-items: flex-start; gap: 0; } }

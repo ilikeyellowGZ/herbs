@@ -132,8 +132,9 @@ export default {
         return secured(Response.redirect(url, 308));
       }
       const admin = url.pathname === '/admin' || url.pathname.startsWith('/admin/');
+      const privateShell = admin || url.pathname === '/checkout/payment';
       const assetUrl = new URL(url);
-      if (admin) assetUrl.pathname = '/app-shell.html';
+      if (privateShell) assetUrl.pathname = '/app-shell.html';
       else if (url.pathname === '/') assetUrl.pathname = '/index.html';
       else if (routes.has(url.pathname)) assetUrl.pathname = `${url.pathname}/index.html`;
       let response = await env.ASSETS.fetch(new Request(assetUrl, request));
@@ -142,8 +143,8 @@ export default {
         const shell = await env.ASSETS.fetch(new Request(assetUrl, request));
         response = new Response(shell.body, { status: 404, headers: shell.headers });
       }
-      const result = secured(response, { privateResponse: admin, https: url.protocol === 'https:' });
-      if (!admin && result.headers.get('content-type')?.includes('text/html')) result.headers.set('Cache-Control', 'no-cache');
+      const result = secured(response, { privateResponse: privateShell, https: url.protocol === 'https:' });
+      if (!privateShell && result.headers.get('content-type')?.includes('text/html')) result.headers.set('Cache-Control', 'no-cache');
       if (url.pathname.startsWith('/assets/')) result.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
       return result;
     } catch (error) {

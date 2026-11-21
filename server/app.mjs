@@ -107,6 +107,12 @@ export async function createApp(options = {}) {
   });
   app.post('/api/payments/initialize', rate('payment-init', 20, 60000), async (req, res) => { object(req.body); res.json(await payments.initialise(text(req.body.orderId, 'order', 1, 100), text(req.body.token, 'payment access', 32, 128))); });
   app.post('/api/payments/verify', rate('payment-verify', 60, 60000), async (req, res) => { object(req.body); res.json(await payments.verify(text(req.body.reference, 'payment reference', 1, 120), text(req.body.token, 'payment access', 32, 128))); });
+  app.post('/api/payments/status', rate('payment-status', 60, 60000), (req, res) => {
+    object(req.body);
+    const order = payments.authorise(text(req.body.orderId, 'order', 1, 100), text(req.body.token, 'payment access', 32, 128));
+    const attempt = db.prepare('SELECT reference,state,mode FROM payment_attempts WHERE order_id=?').get(order.id);
+    res.json({ orderId: order.id, orderReference: order.reference, total: order.total, status: order.status, payment: order.payment, paymentState: attempt?.state || 'created', mode: attempt?.mode || config.paystackMode, reference: attempt?.reference || '' });
+  });
   app.post('/api/payments/invoice', rate('invoice', 30, 60000), (req, res) => {
     object(req.body);
     const order = payments.authorise(text(req.body.orderId, 'order', 1, 100), text(req.body.token, 'payment access', 32, 128));
@@ -150,7 +156,7 @@ export async function createApp(options = {}) {
     if (order.status !== previous.status && ['confirmed', 'fulfilled', 'cancelled'].includes(order.status)) notifications.enqueue(`order-${order.status}`, { order }, { key: `order-${order.status}/${order.id}`, recipient: order.details.email, entityId: order.id });
     if (order.payment !== previous.payment) {
       const type = order.payment === 'paid' ? 'payment-received' : order.payment === 'refunded' ? 'refund-received' : 'payment-pending';
-      notifications.enqueue(type, { order, payment: { amount: order.total, status: order.payment } }, { key: `manual-${type}/${order.id}`, recipient: order.details.email, entityId: order.id });
+      notifications.enqueue(type, { order, payment: { amount: order.total, status: order.payment, source: 'manual' } }, { key: `manual-${type}/${order.id}`, recipient: order.details.email, entityId: order.id });
       notifications.enqueue('owner-payment', { order }, { key: `manual-owner-${order.payment}/${order.id}`, audience: 'owner', entityId: order.id });
     }
   })));
@@ -249,7 +255,7 @@ export async function createApp(options = {}) {
     res.json({ totalOrders: orders.length, pendingOrders: orders.filter(o => o.status === 'pending').length, paidRevenue: orders.filter(o => o.payment === 'paid').reduce((sum, o) => sum + o.total, 0), openEnquiries: db.prepare("SELECT COUNT(*) AS count FROM enquiries WHERE status!='resolved'").get().count, lowStock: db.prepare('SELECT * FROM products WHERE active=1 AND stock IS NOT NULL AND stock<=5 ORDER BY stock').all().map(mapProduct), recentOrders: orders.slice(0, 5).map(mapOrder), days });
   });
   app.use('/api', (_req, _res, next) => next(new ApiError(404, 'API route not found.')));
-  const dist = resolve('dist');
+  const dist = resolve(options.distDir || 'dist');
   if (options.staticAssets !== false && existsSync(join(dist, 'index.html'))) {
     // HTML is not cached: saved products and settings are loaded from the API.
     app.use(express.static(dist, { index: false, setHeaders(res, path) { res.setHeader('Cache-Control', path.includes(`${join('assets', '')}`) ? 'public,max-age=31536000,immutable' : 'no-cache'); } }));
