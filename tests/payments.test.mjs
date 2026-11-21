@@ -157,6 +157,25 @@ test('an ambiguous equal partial refund is reconciled later without needing anot
   assert.equal([...events.values()].filter(event => event.type === 'refund-received').length, 2);
 }));
 
+test('an expiring reconciliation cannot delete a newer same-reference follow-up', async () => fixture(async ({ service, order, key, db, providers, setResult, events }) => {
+  const token = service.access(order.id, key), { reference } = await service.initialise(order.id, token);
+  service.settle({ id: 601, status: 'success', reference, domain: 'test', amount: 26500, currency: 'ZAR', customer: { email: details.email } });
+  const record = { id: 503, transaction: 601, amount: 5000, currency: 'ZAR', domain: 'test', status: 'processed' };
+  setResult([record]);
+  await service.webhook({ event: 'refund.processed', data: { transaction_reference: reference, refund_reference: null, amount: '5000', currency: 'ZAR', domain: 'test' } });
+  db.prepare('UPDATE refund_reconciliation SET next_attempt_at=0,until_at=1').run();
+  let entered, release;
+  const started = new Promise(resolve => { entered = resolve; });
+  providers.paystack = async () => { entered(); return new Promise(resolve => { release = resolve; }); };
+  const process = service.processRefunds({ now: Date.now() });
+  await started;
+  const renewed = Date.now() + 72 * 3600000;
+  db.prepare('UPDATE refund_reconciliation SET until_at=?').run(renewed);
+  release([record]); await process;
+  assert.equal(db.prepare('SELECT until_at FROM refund_reconciliation').get().until_at, renewed);
+  assert.equal([...events.values()].some(event => event.type === 'owner-alert'), false);
+}));
+
 test('access uses the imported database secret after host setup', async () => fixture(async ({ service, order, key, db, config, providers, notifications }) => {
   db.prepare("UPDATE integration_secrets SET value=? WHERE name='payment-access'").run('ba'.repeat(32));
   const token = service.access(order.id, key);

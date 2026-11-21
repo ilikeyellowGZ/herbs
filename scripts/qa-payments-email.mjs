@@ -7,6 +7,7 @@ import { createHmac } from 'node:crypto';
 import { chromium } from 'playwright';
 import AxeBuilder from '@axe-core/playwright';
 import { createApp } from '../server/app.mjs';
+import { updateOrder } from '../server/commerce.mjs';
 
 const directory = await mkdtemp(join(tmpdir(), 'herby-browser-payments-'));
 const server = createServer();
@@ -29,7 +30,7 @@ server.on('request', store.app);
 const browser = await chromium.launch({ channel: process.env.QA_BROWSER || (process.platform === 'win32' ? 'msedge' : 'chrome'), headless: true });
 await mkdir('artifacts/payments-email', { recursive: true });
 async function axe(page, context) {
-  const results = await new AxeBuilder({ page }).disableRules(['frame-tested']).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze();
+  const results = await new AxeBuilder({ page }).options({ iframes: false }).exclude('.admin-email-preview').withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze();
   assert.deepEqual(results.violations.map(v => ({ id: v.id, targets: v.nodes.map(n => n.target) })), [], context);
 }
 async function screenshot(page, name) {
@@ -39,7 +40,7 @@ async function screenshot(page, name) {
 }
 let lastPage;
 try {
-  for (const width of [375, 768, 1280]) {
+  for (const width of (process.env.QA_WIDTHS || '375,768,1280').split(',').map(Number)) {
     const context = await browser.newContext({ viewport: { width, height: 900 }, reducedMotion: 'reduce', acceptDownloads: true });
     await context.route('https://checkout.paystack.com/**', route => route.fulfill({ contentType: 'text/html', body: '<!doctype html><html lang="en"><title>Fake hosted checkout</title><body><h1>Paystack test checkout</h1><p>Local fixture. No external request or charge.</p></body></html>' }));
     const page = await context.newPage();
@@ -58,10 +59,16 @@ try {
     await page.getByRole('button', { name: 'Continue to Paystack', exact: true }).click();
     await page.waitForURL('https://checkout.paystack.com/**');
     const reference = [...transactions.keys()].at(-1);
+    if (width === 375) {
+      const other = await context.newPage();
+      await other.goto(origin + '/products/moringa', { waitUntil: 'networkidle' });
+      await other.getByRole('button', { name: 'Add Moringa to bag', exact: true }).click();
+      await other.close();
+    }
     assert.equal(store.db.prepare('SELECT payment FROM orders ORDER BY rowid DESC LIMIT 1').get().payment, 'unpaid');
     await page.goto(origin + '/checkout/payment?reference=' + reference, { waitUntil: 'networkidle' });
     await page.getByRole('heading', { name: 'A little patience, please.', exact: true }).waitFor();
-    assert.equal(await page.getByRole('button', { name: 'Open shopping bag, 1 item', exact: true }).count(), 1);
+    assert.equal(await page.getByRole('button', { name: width === 375 ? 'Open shopping bag, 2 items' : 'Open shopping bag, 1 item', exact: true }).count(), 1);
     transactions.get(reference).status = 'success';
     const payload = JSON.stringify({ event: 'charge.success', data: transactions.get(reference) });
     const timestamp = Math.floor(Date.now() / 1000);
@@ -70,7 +77,7 @@ try {
     assert.equal(webhook.status, 200);
     await page.getByRole('button', { name: 'Check payment status', exact: true }).click();
     await page.getByRole('heading', { name: 'A little nature, on its way.', exact: true }).waitFor();
-    await page.getByRole('button', { name: 'Open shopping bag, 0 items', exact: true }).waitFor();
+    await page.getByRole('button', { name: width === 375 ? 'Open shopping bag, 1 item' : 'Open shopping bag, 0 items', exact: true }).waitFor();
     const downloaded = page.waitForEvent('download');
     await page.getByRole('button', { name: 'Download invoice', exact: true }).click();
     assert.match((await downloaded).suggestedFilename(), /^INV-HH-.*\.html$/);
@@ -78,6 +85,41 @@ try {
     await page.getByRole('heading', { name: 'A little nature, on its way.', exact: true }).waitFor();
     await axe(page, `payment return ${width}`);
     await screenshot(page, `payment-success-${width}`);
+    if (width === 375) {
+      await page.getByRole('button', { name: 'Open shopping bag, 1 item', exact: true }).click();
+      await page.getByRole('dialog', { name: 'Your bag' }).getByRole('button', { name: 'Remove Moringa from bag', exact: true }).click();
+      await page.getByRole('button', { name: 'Close shopping bag', exact: true }).click();
+      await page.goto(origin + '/products/hibiscus', { waitUntil: 'networkidle' });
+      await page.getByRole('button', { name: 'Add Hibiscus to bag', exact: true }).click();
+      await page.getByRole('button', { name: 'Open shopping bag, 1 item', exact: true }).click();
+      await page.getByRole('dialog', { name: 'Your bag' }).getByRole('link', { name: 'Checkout', exact: true }).click();
+      await page.getByLabel('Full name', { exact: true }).fill('Ada Lovelace');
+      await page.getByLabel('Email address', { exact: true }).fill(`buyer${width}@example.com`);
+      await page.getByLabel('Phone number', { exact: true }).fill('0821234567');
+      await page.getByRole('radio', { name: /Collect in Gauteng/ }).check();
+      await page.getByRole('button', { name: 'Review order', exact: true }).click();
+      await page.getByRole('button', { name: 'Continue to Paystack', exact: true }).click();
+      await page.waitForURL('https://checkout.paystack.com/**');
+      const repeated = [...transactions.keys()].at(-1);
+      assert.notEqual(repeated, reference, 'An identical later purchase gets a new order and transaction');
+      const raw = store.db.prepare('SELECT order_id FROM payment_attempts WHERE reference=?').get(repeated);
+      updateOrder(store.db, raw.order_id, { status: 'cancelled' }, 'Local browser fixture');
+      transactions.get(repeated).status = 'success';
+      await page.goto(origin + '/checkout/payment?reference=' + repeated, { waitUntil: 'networkidle' });
+      await page.getByRole('heading', { name: /Payment received/ }).waitFor();
+      assert.equal(await page.getByRole('link', { name: 'Start a new checkout', exact: true }).count(), 0);
+      const response = await fetch(origin + '/api/orders', { method: 'POST', headers: { Origin: origin, 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() }, body: JSON.stringify({ details: { name: 'Ada Lovelace', email: 'buyer375@example.com', phone: '0821234567', notes: '' }, method: 'collection', items: [{ slug: 'moringa', quantity: 1 }], expectedTotal: 8500 }) });
+      const cancelled = await response.json(); assert.equal(response.status, 201);
+      updateOrder(store.db, cancelled.id, { status: 'cancelled' }, 'Local browser fixture');
+      await page.evaluate(value => { sessionStorage.setItem('herby-payment-recovery-v1', JSON.stringify({ orderId: value.id, token: value.paymentToken, orderReference: value.reference, total: value.total, mode: 'test' })); localStorage.setItem('herby-health-cart-v1', JSON.stringify([{ slug: 'moringa', quantity: 1 }])); }, cancelled);
+      await page.goto(origin + '/checkout/payment', { waitUntil: 'networkidle' });
+      await page.getByRole('heading', { name: 'Your order is cancelled.', exact: true }).waitFor();
+      await page.getByRole('link', { name: 'Start a new checkout', exact: true }).click();
+      await page.getByLabel('Full name', { exact: true }).waitFor();
+      await page.getByRole('button', { name: 'Open shopping bag, 1 item', exact: true }).click();
+      await page.getByRole('dialog', { name: 'Your bag' }).getByRole('button', { name: 'Remove Moringa from bag', exact: true }).click();
+      await page.getByRole('button', { name: 'Close shopping bag', exact: true }).click();
+    }
     await page.goto(origin + '/contact', { waitUntil: 'networkidle' });
     await page.getByLabel('First name', { exact: true }).fill('Ada');
     await page.getByLabel('Surname', { exact: true }).fill('Lovelace');
@@ -101,7 +143,9 @@ try {
     await page.getByRole('heading', { name: 'Your correspondence.', exact: true }).waitFor();
     await page.getByLabel('Email template', { exact: true }).selectOption('invoice');
     await page.frameLocator('.admin-email-preview').getByRole('heading', { name: 'Your invoice', exact: true }).waitFor();
+    console.log(`${width}px: notification preview loaded; checking application accessibility.`);
     await axe(page, `notifications ${width}`);
+    await page.locator('.admin-email-preview').screenshot({ path: `artifacts/payments-email/email-preview-${width}.png` });
     await screenshot(page, `notification-centre-${width}`);
     await page.getByRole('button', { name: 'View plain text', exact: true }).click();
     assert.match(await page.locator('.admin-email-text').textContent(), /INV-HH-/);

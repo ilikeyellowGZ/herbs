@@ -8,4 +8,5 @@ export const pages = [
   { path: '/terms-and-conditions', label: 'Terms and conditions', title: 'Terms and conditions', description: 'Read the Herby Health website terms, including product information, preview ordering, consumer rights and acceptable use.' },
   { path: '/privacy-policy', label: 'Privacy policy', title: 'Privacy policy', description: 'Learn how the Herby Health website preview handles enquiry details, browser storage and your privacy rights.' },
   { path: '/checkout', label: 'Checkout', title: 'Checkout', description: 'Review your Herby Health bag, choose delivery or collection, and prepare your order request.' },
+  { path: '/checkout/payment', label: 'Payment status', title: 'Payment status', description: 'Verify your Herby Health payment status and access your invoice.' },
 ];

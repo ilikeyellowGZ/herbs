@@ -29,6 +29,8 @@ Restart `npm run dev` or `npm start` after changing server variables. `npm run d
 
 The callback reference alone is not proof of payment. Browser verification also needs a private per-order token. Signed webhooks settle an order if the customer closes the browser. A late successful payment on a cancelled order alerts the owner without reopening it. Cancellation does not initiate a refund; perform actual refunds in Paystack. Signed refund notifications are reconciled with provider records, including partial refunds. The dashboard prevents manually overwriting a provider-managed payment.
 
+ID-less refund signals schedule durable provider-list follow-up for up to 72 hours, even when an older equal partial refund initially matches the signal. Canonical refund IDs keep notifications and cumulative totals idempotent. Node uses the service timer; Cloudflare uses Durable Object alarms. A job that reaches its follow-up window alerts the owner for reconciliation. Payment return status can recover the saved provider reference after a lost initialise response; it verifies a known payment attempt before treating a cancelled order as unpaid.
+
 If the first successful initialise response is lost and Paystack refuses to reuse that transaction reference, reconcile it in Paystack before creating another order. The application preserves one reference and will not silently create another charge. See [payment-service-guide.md](payment-service-guide.md).
 
 ## Resend dashboard
