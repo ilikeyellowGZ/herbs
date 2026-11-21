@@ -3,10 +3,12 @@ const key = 'herby-payment-recovery-v1';
 let current: PaymentSession | null = null;
 export function readPaymentSession(): PaymentSession | null {
   if (typeof window === 'undefined') return null;
+  let saved: string | null;
+  try { saved = sessionStorage.getItem(key); } catch { return current; }
   try {
-    const value = JSON.parse(sessionStorage.getItem(key) || 'null');
-    if (value && typeof value.orderId === 'string' && value.orderId.length <= 100 && typeof value.token === 'string' && /^[a-f0-9]{64}$/.test(value.token) && typeof value.orderReference === 'string' && value.orderReference.length <= 120 && Number.isSafeInteger(value.total) && value.total >= 0 && (!value.reference || /^[A-Za-z0-9.=-]{1,120}$/.test(value.reference)) && ['test', 'live'].includes(value.mode)) current = value;
-  } catch { /* In-memory recovery remains available when storage is blocked. */ }
+    const value = JSON.parse(saved || 'null');
+    current = value && typeof value.orderId === 'string' && value.orderId.length <= 100 && typeof value.token === 'string' && /^[A-Za-z0-9_-]{43}$/.test(value.token) && typeof value.orderReference === 'string' && value.orderReference.length <= 120 && Number.isSafeInteger(value.total) && value.total >= 0 && (!value.reference || /^[A-Za-z0-9.=-]{1,120}$/.test(value.reference)) && ['test', 'live'].includes(value.mode) ? value : null;
+  } catch { current = null; }
   return current;
 }
 export function savePaymentSession(value: PaymentSession) {

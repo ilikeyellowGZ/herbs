@@ -8,6 +8,10 @@ import { createOwner } from '../server/auth.mjs';
 import { snapshotDatabase } from '../cloudflare/snapshot.mjs';
 
 const origin = 'https://herbs.service-heyywebb.workers.dev';
+if (!process.argv.includes('--prepare-only')) {
+  const existing = await fetch(`${origin}/api/auth/session`, { signal: AbortSignal.timeout(10000) }).then(response => response.json()).catch(() => null);
+  if (existing?.configured) throw new Error('The live store is already configured. Use npm run cf:deploy for updates; setup never replaces live data.');
+}
 const dataDir = resolve(process.env.DATA_DIR || '.local');
 const exportDir = join(dataDir, 'cloudflare');
 await mkdir(exportDir, { recursive: true, mode: 0o700 });
@@ -45,9 +49,9 @@ if (process.argv.includes('--prepare-only')) {
 } else {
   const token = randomBytes(32).toString('hex');
   await runWrangler(['secret', 'put', 'MIGRATION_TOKEN'], token);
-  await runWrangler(['deploy']);
   let imported = false;
   try {
+    await runWrangler(['deploy']);
     const response = await fetch(`${origin}/__setup/import`, {
       method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify(snapshot), signal: AbortSignal.timeout(60000),
@@ -56,7 +60,7 @@ if (process.argv.includes('--prepare-only')) {
     imported = true;
     console.log('Store data and private attachments migrated successfully.');
   } finally {
-    await runWrangler(['secret', 'delete', 'MIGRATION_TOKEN', '--force']);
+    await runWrangler(['secret', 'delete', 'MIGRATION_TOKEN'], 'y');
   }
   if (imported) console.log(`Live website: ${origin}\nOwner dashboard: ${origin}/admin`);
 }
